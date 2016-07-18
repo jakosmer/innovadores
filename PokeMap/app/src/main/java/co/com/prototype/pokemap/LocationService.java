@@ -1,4 +1,4 @@
-package co.com.suramericana.carlviar.proto.mqttclient;
+package co.com.prototype.pokemap;
 
 import android.app.Service;
 import android.content.Intent;
