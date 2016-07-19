@@ -1,5 +1,7 @@
 package co.com.prototype.pokemap;
 
+import android.location.Location;
+import android.location.LocationListener;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -49,8 +51,9 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         //LocationService prueba = new LocationService();
 
 
+        GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
 
-        LatLng sydney = new LatLng(6.244207994244943, -75.58121155000003);
+        LatLng sydney = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Med"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,3));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(12)
