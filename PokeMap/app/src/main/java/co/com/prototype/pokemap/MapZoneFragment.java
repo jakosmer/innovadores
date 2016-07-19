@@ -1,20 +1,20 @@
 package co.com.prototype.pokemap;
 
-import android.location.Location;
-import android.location.LocationListener;
+import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -54,7 +54,21 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
 
         LatLng sydney = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Med"));
+
+        CircleOptions circleOptions = new CircleOptions()
+            .center(new LatLng(6.26718156, -75.58027267))
+            .radius(300)
+            .fillColor(Color.argb(150,84,162,208))
+            .strokeWidth(1).strokeColor(Color.argb(150,84,162,208));
+
+        // Get back the mutable Circle
+        Circle circle = mMap.addCircle(circleOptions);
+
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Med 1").icon(BitmapDescriptorFactory.fromResource(R.drawable.squirtle)));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(6.26718156, -75.58027267)).title("Med 2").icon(BitmapDescriptorFactory.fromResource(R.drawable.pikachu)));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(6.25532226, -75.5848217)).title("Med 3").icon(BitmapDescriptorFactory.fromResource(R.drawable.squirtle)));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(6.23603966, -75.56619644)).title("Med 4").icon(BitmapDescriptorFactory.fromResource(R.drawable.pikachu)));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(6.25958823, -75.5459404)).title("Med 5").icon(BitmapDescriptorFactory.fromResource(R.drawable.squirtle)));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,3));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(12)
         , 1000, new GoogleMap.CancelableCallback() {
