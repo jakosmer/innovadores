@@ -64,7 +64,7 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         // Get back the mutable Circle
         Circle circle = mMap.addCircle(circleOptions);
 
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Med 1").icon(BitmapDescriptorFactory.fromResource(R.drawable.squirtle)));
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Med 1").icon(BitmapDescriptorFactory.fromResource(R.drawable.p_1)));
         mMap.addMarker(new MarkerOptions().position(new LatLng(6.26718156, -75.58027267)).title("Med 2").icon(BitmapDescriptorFactory.fromResource(R.drawable.pikachu)));
         mMap.addMarker(new MarkerOptions().position(new LatLng(6.25532226, -75.5848217)).title("Med 3").icon(BitmapDescriptorFactory.fromResource(R.drawable.squirtle)));
         mMap.addMarker(new MarkerOptions().position(new LatLng(6.23603966, -75.56619644)).title("Med 4").icon(BitmapDescriptorFactory.fromResource(R.drawable.pikachu)));
