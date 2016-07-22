@@ -19,6 +19,7 @@ import dto.{FindPokemon, PokemonPosition}
 import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.math._
 import spray.json.DefaultJsonProtocol
+import web.rest.CallRestService
 
 case class IpInfo(query: String, country: Option[String], city: Option[String], lat: Option[Double], lon: Option[Double])
 
@@ -132,7 +133,7 @@ trait Service extends Protocols {
             val fiteredPokemon = pokemonList.filter(p => p.name == pokemonInfo.headOption.get)
 
             complete {
-              fiteredPokemon
+              fiteredPokemon.toString()
             }
         }~(post & entity(as[FindPokemon])) { findPokemon =>
 
@@ -150,8 +151,27 @@ trait Service extends Protocols {
             println(respuesta)
 
             complete {
-              respuesta
+              respuesta.toString()
               }
+        }
+      }~pathPrefix("findActivePokemon") {
+        (get & path(Segment)) { pokemonName =>
+
+          //https://pokevision.com/map/data/34.0089404989527/-118.49765539169312
+          val respuesta  = CallRestService.getActivePokemons("https://pokevision.com/map/data/" ,"34.0089404989527", "-118.49765539169312" )
+
+          complete {
+            respuesta
+          }
+        }~(post & entity(as[FindPokemon])) { findPokemon =>
+
+          println(findPokemon)
+          //https://pokevision.com/map/data/34.0089404989527/-118.49765539169312
+          val respuesta  = CallRestService.getActivePokemons("https://pokevision.com/map/data/" ,findPokemon.lon.get.toString, findPokemon.lat.get.toString )
+
+          complete {
+            respuesta
+          }
         }
       }
 

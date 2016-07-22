@@ -16,6 +16,9 @@ libraryDependencies ++= {
     "com.typesafe.akka" %% "akka-http-experimental" % akkaV,
     "com.typesafe.akka" %% "akka-http-spray-json-experimental" % akkaV,
     "com.typesafe.akka" %% "akka-http-testkit" % akkaV,
+    "net.databinder.dispatch"    %% "dispatch-core"          % "0.11.3" exclude("com.ning", "async-http-client"),
+    "com.ning"                    % "async-http-client"      % "1.9.38",
+    "net.databinder.dispatch"    %% "dispatch-json4s-native" % "0.11.3",
     "org.scalatest"     %% "scalatest" % scalaTestV % "test"
   )
 }
