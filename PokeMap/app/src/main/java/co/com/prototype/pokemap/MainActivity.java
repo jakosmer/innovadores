@@ -16,8 +16,21 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.ViewById;
+import org.androidannotations.rest.spring.annotations.RestService;
+
+import java.util.List;
+
+import co.com.prototype.pokemap.Model.Beans.PokemonPosition;
+
+@EActivity
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    @RestService
+    co.com.prototype.pokemap.Model.Repository.RestService service;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +68,23 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         assert navigationView != null;
         navigationView.setNavigationItemSelectedListener(this);
+        Thread thread = new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    List<PokemonPosition> pos = service.getPokemonPositions("Pikachu");
+                    String hola = "";
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
     }
 
     @Override
