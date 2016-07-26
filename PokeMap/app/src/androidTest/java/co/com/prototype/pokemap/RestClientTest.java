@@ -1,8 +1,10 @@
 package co.com.prototype.pokemap;
 
 
+import org.androidannotations.annotations.EBean;
 import org.androidannotations.rest.spring.annotations.RestService;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.List;
 
@@ -12,6 +14,7 @@ import co.com.prototype.pokemap.Model.Beans.PokemonPosition;
  * Created by carlosmario on 17/07/2016.
  */
 
+@EBean
 public class RestClientTest {
 
     @RestService
@@ -19,9 +22,9 @@ public class RestClientTest {
 
     @Test
     public void getPokemonByNameTest(){
-       /* List<PokemonPosition> pos = service.getPokemonPositions("pikachu");
+        List<PokemonPosition> pos = service.getPokemonPositions("pikachu");
 
-        assert( pos.size() > 0  );*/
+        assert( pos.size() > 0  );
     }
 
 }
