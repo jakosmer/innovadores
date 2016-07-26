@@ -83,4 +83,5 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
             }
         });
     }
+
 }

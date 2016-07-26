@@ -1,25 +1,33 @@
 package co.com.prototype.pokemap.Model.Beans;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by carlosmario on 17/07/2016.
  */
 public class PokemonPosition {
 
-    @JsonProperty("city")
-    public String City;
+    @SerializedName("city")
+    String city;
 
-    @JsonProperty("name")
-    public String Name;
+    @SerializedName("name")
+    String name_;
 
-    @JsonProperty("country")
-    public String Country;
+    @SerializedName("country")
+    String country;
 
-    @JsonProperty("lon")
-    public long Longitude;
+    @SerializedName("lon")
+    String longitude;
 
-    @JsonProperty("lat")
-    public long Latitude;
+    @SerializedName("lat")
+    String latitude;
+
+    public PokemonPosition(String city, String name, String country, String longitude, String latitude){
+        this.city = city;
+        this.name_ = name;
+        this.country = country;
+        this.longitude = longitude;
+        this.latitude = latitude;
+    }
 
 }
