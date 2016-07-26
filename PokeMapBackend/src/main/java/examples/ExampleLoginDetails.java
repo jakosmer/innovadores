@@ -19,6 +19,6 @@ package examples;
  * Created by court on 19/07/2016.
  */
 public class ExampleLoginDetails {
-	public static String LOGIN = "aariasta@gmail.com";
-	public static String PASSWORD = "Arce5720273";
+	public static String LOGIN = "";
+	public static String PASSWORD = "";
 }
