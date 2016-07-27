@@ -57,7 +57,7 @@ trait Protocols extends DefaultJsonProtocol {
   implicit val ipPairSummaryFormat = jsonFormat3(IpPairSummary.apply)
   implicit val pokemonPositionFormat = jsonFormat2(Position.apply)
   implicit val pokemonInfoFormat = jsonFormat4(PokemonPosition.apply)
-  implicit val findPokemonFormat = jsonFormat3(FindPokemon.apply)
+  implicit val findPokemonFormat = jsonFormat4(FindPokemon.apply)
 
   implicit val findGymFormat = jsonFormat2(Gym.apply)
   implicit val findStopFormat = jsonFormat2(Stop.apply)
@@ -150,8 +150,6 @@ trait Service extends Protocols {
           } else {
             "Los parametros para la busqueda no pueden arrojar resutlados"
           }
-          println("Respuesta: ")
-          println(respuesta)
 
           complete {
             respuesta.toJson
@@ -168,9 +166,6 @@ trait Service extends Protocols {
             }
           } ~ (post & entity(as[FindPokemon])) { findPokemon =>
 
-            println(findPokemon)
-            //https://pokevision.com/map/data/34.0089404989527/-118.49765539169312
-            //val respuesta  = CallRestService.getActivePokemons("https://pokevision.com/map/data/" ,findPokemon.lon.get.toString, findPokemon.lat.get.toString )
             val pokemonService = new PokemonServices
             val respuesta = pokemonService.getNearPokemon(findPokemon)
 
@@ -181,7 +176,6 @@ trait Service extends Protocols {
         }~ pathPrefix("findPokeStop") {
         (post & entity(as[FindPokemon])) { findPokemon =>
 
-          println(findPokemon)
           val pokemonService = new PokemonServices
           val respuesta = pokemonService.getPokeStop(findPokemon)
 
@@ -192,11 +186,8 @@ trait Service extends Protocols {
       } ~ pathPrefix("findPokeGym") {
         (post & entity(as[FindPokemon])) { findPokemon =>
 
-          println(findPokemon)
           val pokemonService = new PokemonServices
           val respuesta = pokemonService.getGyms(findPokemon)
-
-          println(respuesta)
 
           complete {
             respuesta.toJson
