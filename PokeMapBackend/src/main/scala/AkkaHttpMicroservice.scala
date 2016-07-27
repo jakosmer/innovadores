@@ -13,15 +13,16 @@ import akka.stream.scaladsl.{Flow, Sink, Source}
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import java.io.IOException
-
-import dto.{FindPokemon, PokemonPosition}
+import dto._
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.math._
 import spray.json.DefaultJsonProtocol
 import web.rest.CallRestService
 import spray.json._
+
 import DefaultJsonProtocol._
+import service.pokemon.PokemonServices
 
 case class IpInfo(query: String, country: Option[String], city: Option[String], lat: Option[Double], lon: Option[Double])
 
@@ -54,8 +55,12 @@ trait Protocols extends DefaultJsonProtocol {
   implicit val ipInfoFormat = jsonFormat5(IpInfo.apply)
   implicit val ipPairSummaryRequestFormat = jsonFormat2(IpPairSummaryRequest.apply)
   implicit val ipPairSummaryFormat = jsonFormat3(IpPairSummary.apply)
-  implicit val pokemonInfoFormat = jsonFormat5(PokemonPosition.apply)
+  implicit val pokemonPositionFormat = jsonFormat2(Position.apply)
+  implicit val pokemonInfoFormat = jsonFormat3(PokemonPosition.apply)
   implicit val findPokemonFormat = jsonFormat3(FindPokemon.apply)
+
+  implicit val findGymFormat = jsonFormat2(Gym.apply)
+  implicit val findStopFormat = jsonFormat2(Stop.apply)
 
 }
 
@@ -68,22 +73,18 @@ trait Service extends Protocols {
   val logger: LoggingAdapter
 
   val pokemonList = List(
-    PokemonPosition("Pikachu", Some("Colombia"), Some("Medellin"), Some(-122.0881), Some(37.3845)),
-    PokemonPosition("Magikarp", Some("Colombia"), Some("Medellin"), Some(-122.0881), Some(37.3845)),
-    PokemonPosition("Rattata", Some("Colombia"), Some("Medellin"), Some(-122.0881), Some(37.3845)),
-    PokemonPosition("Hitmonchan", Some("Colombia"), Some("Medellin"), Some(-122.0881), Some(37.3845)),
-    PokemonPosition("Snorlax", Some("Colombia"), Some("Medellin"), Some(-122.0881), Some(37.3845)),
-
-    PokemonPosition("Jynx", Some("Colombia"), Some("Medellin"), Some(-122.0881), Some(37.3845)),
-    PokemonPosition("Grimer", Some("Colombia"), Some("Medellin"), Some(-122.0881), Some(37.3845)),
-    PokemonPosition("Koffing", Some("Colombia"), Some("Medellin"), Some(-122.0881), Some(37.3845)),
-    PokemonPosition("Drowzee", Some("Colombia"), Some("Medellin"), Some(-123.0881), Some(38.3845)),
-
-    PokemonPosition("Drowzee", Some("Colombia"), Some("Medellin"), Some(-122.0881), Some(37.3845)),
-
-    PokemonPosition("Ditto", Some("Colombia"), Some("Medellin"), Some(-122.0881), Some(37.3845)),
-    PokemonPosition("Squirtle", Some("Colombia"), Some("Medellin"), Some(-122.0881), Some(37.3845))
-
+    PokemonPosition("Pikachu", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition("Magikarp", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition("Rattata", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition("Hitmonchan", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition("Snorlax", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition("Jynx", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition("Grimer", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition("Koffing", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition("Drowzee", 0, Some(Position(-123.0881,38.3845))),
+    PokemonPosition("Drowzee", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition("Ditto", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition("Squirtle", 0, Some(Position(-122.0881,37.3845)))
   )
 
   lazy val ipApiConnectionFlow: Flow[HttpRequest, HttpResponse, Any] =
@@ -128,56 +129,84 @@ trait Service extends Protocols {
           }
         }
       }~pathPrefix("findPokemon") {
-          (get & path(Segment)) { pokemonName =>
-
-            val pokemonInfo:Array[String] = pokemonName.toString.split(",")
-
-            val fiteredPokemon = pokemonList.filter(p => p.name == pokemonInfo.headOption.get)
-
-            complete {
-              fiteredPokemon.toJson
-            }
-        }~(post & entity(as[FindPokemon])) { findPokemon =>
-
-            println(findPokemon)
-            var respuesta = List.empty[PokemonPosition]
-
-            if(findPokemon.name.isDefined && findPokemon.lon.isDefined && findPokemon.lat.isDefined) {
-                respuesta = pokemonList.filter(p => p.name == findPokemon.name.get && p.lon.equals(findPokemon.lon) && p.lat.get == findPokemon.lat.get)
-            }else if(findPokemon.name.isDefined ){
-                respuesta = pokemonList.filter(p => p.name == findPokemon.name.get)
-            }else {
-              "Los parametros para la busqueda no pueden arrojar resutlados"
-            }
-            println("Respuesta: ")
-            println(respuesta)
-
-            complete {
-              respuesta.toJson
-              }
-        }
-      }~pathPrefix("findActivePokemon") {
         (get & path(Segment)) { pokemonName =>
 
-          //https://pokevision.com/map/data/34.0089404989527/-118.49765539169312
-          val respuesta  = CallRestService.getActivePokemons("https://pokevision.com/map/data/" ,"34.0089404989527", "-118.49765539169312" )
+          val pokemonInfo: Array[String] = pokemonName.toString.split(",")
+
+          val fiteredPokemon = pokemonList.filter(p => p.name == pokemonInfo.headOption.get)
+
+          complete {
+            fiteredPokemon.toJson
+          }
+        } ~ (post & entity(as[FindPokemon])) { findPokemon =>
+
+          println(findPokemon)
+          var respuesta = List.empty[PokemonPosition]
+
+          if (findPokemon.name.isDefined && findPokemon.position.isDefined) {
+            respuesta = pokemonList.filter(p => p.name == findPokemon.name.get && p.position.get.longitud.equals(findPokemon.position.get.longitud) && p.position.get.latitud == findPokemon.position.get.latitud)
+          } else if (findPokemon.name.isDefined) {
+            respuesta = pokemonList.filter(p => p.name == findPokemon.name.get)
+          } else {
+            "Los parametros para la busqueda no pueden arrojar resutlados"
+          }
+          println("Respuesta: ")
+          println(respuesta)
 
           complete {
             respuesta.toJson
           }
-        }~(post & entity(as[FindPokemon])) { findPokemon =>
+        } } ~ pathPrefix("findActivePokemon") {
+          (get & path(Segment)) { pokemonName =>
+
+            println("Buscando pokemon------------------"+pokemonName)
+            //https://pokevision.com/map/data/34.0089404989527/-118.49765539169312
+            val respuesta = CallRestService.getActivePokemons("https://pokevision.com/map/data/", "34.0089404989527", "-118.49765539169312")
+
+            complete {
+              respuesta.toJson
+            }
+          } ~ (post & entity(as[FindPokemon])) { findPokemon =>
+
+            println(findPokemon)
+            //https://pokevision.com/map/data/34.0089404989527/-118.49765539169312
+            //val respuesta  = CallRestService.getActivePokemons("https://pokevision.com/map/data/" ,findPokemon.lon.get.toString, findPokemon.lat.get.toString )
+            val pokemonService = new PokemonServices
+            val respuesta = pokemonService.getNearPokemon(findPokemon)
+
+            complete {
+              respuesta.toJson
+            }
+          }
+        }~ pathPrefix("findPokeStop") {
+        (post & entity(as[FindPokemon])) { findPokemon =>
 
           println(findPokemon)
-          //https://pokevision.com/map/data/34.0089404989527/-118.49765539169312
-          val respuesta  = CallRestService.getActivePokemons("https://pokevision.com/map/data/" ,findPokemon.lon.get.toString, findPokemon.lat.get.toString )
+          val pokemonService = new PokemonServices
+          val respuesta = pokemonService.getPokeStop(findPokemon)
+
+          println(respuesta)
+
+          complete {
+            respuesta.toJson
+          }
+        }
+      } ~ pathPrefix("findPokeGym") {
+        (post & entity(as[FindPokemon])) { findPokemon =>
+
+          println(findPokemon)
+          val pokemonService = new PokemonServices
+          val respuesta = pokemonService.getGyms(findPokemon)
+
+          println(respuesta)
 
           complete {
             respuesta.toJson
           }
         }
       }
+      }
 
-    }
   }
 }
 
