@@ -5,7 +5,16 @@ package dto
   */
 case  class PokemonInfo(name : String , typePokemon: String)
 
-case  class FindPokemon(name : Option[String], lat: Option[Double], lon: Option[Double])
+case  class FindPokemon(token : String, name : Option[String], position: Option[Position])
 
-case  class PokemonPosition(name : String, country: Option[String], city: Option[String], lat: Option[Double], lon: Option[Double])
+case  class PokemonPosition(name : String, timetohide : Long, position: Option[Position])
+
+case  class Position(latitud : Double, longitud : Double)
+
+case  class Gym(teamColor: String, position: Position)
+
+case  class Stop(description : String, position: Position)
+
+
+
 
