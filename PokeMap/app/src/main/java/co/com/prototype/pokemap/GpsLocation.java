@@ -26,9 +26,6 @@ public class GpsLocation extends Service implements LocationListener {
     LocationManager locationManager;
     boolean gpsActivo;
 
-
-
-
     private static final long TIME_LOCATION = 0; //* 60; // 1 minuto
     private static final long DISTANCE = 0; // 1 metro
 
@@ -80,7 +77,6 @@ public class GpsLocation extends Service implements LocationListener {
 
     @Override
     public void onProviderDisabled(String provider) {
-
     }
 
     @Nullable

@@ -75,17 +75,23 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
         LatLng sydney = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
 
+
+        MarkerManager markerManager = new MarkerManager(mMap,getResources());
+
+        markerManager.addMarker(sydney, "p_3");
+
+
         CircleOptions circleOptions = new CircleOptions()
-            .center(new LatLng(6.26718156, -75.58027267))
-            .radius(300)
-            .fillColor(Color.argb(150,84,162,208))
-            .strokeWidth(1).strokeColor(Color.argb(150,84,162,208));
+                .center(new LatLng(6.26718156, -75.58027267))
+                .radius(300)
+                .fillColor(Color.argb(150, 84, 162, 208))
+                .strokeWidth(1).strokeColor(Color.argb(150, 84, 162, 208));
 
         // Get back the mutable Circle
         Circle circle = mMap.addCircle(circleOptions);
 
 
-        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+        /*Bitmap.Config conf = Bitmap.Config.ARGB_8888;
         Bitmap bmp = Bitmap.createBitmap(300, 300, conf);
         Canvas canvas1 = new Canvas(bmp);
 
@@ -120,46 +126,29 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
                 }
             }
         });
-        t.start();
+        t.start(); */
 
-        /*IApiContract endPoints = ApiClient.getClient(IApiContract.class);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Med 1").icon(BitmapDescriptorFactory.fromResource(R.drawable.bulbasaur)));
 
-        Call<List<PokemonPosition>> caller = endPoints.getPokemonPositions("eyJhbGciOiJSUzI1NiIsImtpZCI6IjUwNzgyYmNmMGE5NzQxZTZiZjkwMjY2ZGMzNTY4YWE5MDc5MWYxNmYifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhdF9oYXNoIjoiU2d5amtXN0tzWlZKTG1MLVUxUDNIUSIsImF1ZCI6Ijg0ODIzMjUxMTI0MC03M3JpM3Q3cGx2azk2cGo0Zjg1dWo4b3RkYXQyYWxlbS5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsInN1YiI6IjExMTQyMTY1MjcxMjA1NzEwMDc1MCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhenAiOiI4NDgyMzI1MTEyNDAtNzNyaTN0N3Bsdms5NnBqNGY4NXVqOG90ZGF0MmFsZW0uYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJlbWFpbCI6ImFhcmlhc3RhQGdtYWlsLmNvbSIsImlhdCI6MTQ2OTYzMTk5NCwiZXhwIjoxNDY5NjM1NTk0fQ.T2P0EPPC8m4-q7vaFtRShjSQK_v4IyGI3AYBn5Wg1BCCVW8iWKij4kyhX1ibL-Q9x0bQS8xzujmeloybDhhCL04wfzCOzWWD815zQAXbtKlmJtSvnCtkpWoo1OoRepp_A3zJzd7H6RKiWEUcNMpzDB4ppHZgtQgfY7lC2lgM-pTPSjRq1rjr-OGqJnS9oIbjgvaZq8b-k4XrwbYyFPj5kl_trGcNxGyvt2QRLf5VZ1NrqPz7151tvyzE6bfpZ4CNONwuHMIi0PivYvkhSvyXLO-BdS3xKpjCGpyOmOqgpEC_QVKOUOluc7Wlvb2ixygNbiXMG40uH-f2egsGfPLntw",
-                                                                            new Position(6.26718156, -75.58027267));
-
-        caller.enqueue(new Callback<List<PokemonPosition>>() {
-            @Override
-            public void onResponse(Call<List<PokemonPosition>> call, Response<List<PokemonPosition>> response) {
-                List<PokemonPosition> pos = response.body();
-            }
-
-            @Override
-            public void onFailure(Call<List<PokemonPosition>> call, Throwable t) {
-                Log.e("PKMERROR", t.getMessage());
-            }
-        });*/
-
-        //mMap.addMarker(new MarkerOptions().position(sydney).title("Med 1").icon(BitmapDescriptorFactory.fromResource(R.drawable.p_1)));
-
-        /*mMap.addMarker(new MarkerOptions().position(new LatLng(6.25532226, -75.5848217)).title("Med 3").icon(BitmapDescriptorFactory.fromResource(R.drawable.squirtle)));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(6.23603966, -75.56619644)).title("Med 4").icon(BitmapDescriptorFactory.fromResource(R.drawable.pikachu)));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(6.25532226, -75.5848217)).title("Med 3").icon(BitmapDescriptorFactory.fromResource(R.drawable.squirtle)));
+        /*mMap.addMarker(new MarkerOptions().position(new LatLng(6.23603966, -75.56619644)).title("Med 4").icon(BitmapDescriptorFactory.fromResource(R.drawable.pikachu)));
         mMap.addMarker(new MarkerOptions().position(new LatLng(6.25958823, -75.5459404)).title("Med 5").icon(BitmapDescriptorFactory.fromResource(R.drawable.squirtle)));*/
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,3));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 3));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(12)
-        , 1000, new GoogleMap.CancelableCallback() {
-            @Override
-            public void onFinish() {
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(12), 2000, null);
-            }
+                , 1000, new GoogleMap.CancelableCallback() {
+                    @Override
+                    public void onFinish() {
+                        mMap.animateCamera(CameraUpdateFactory.zoomTo(12), 2000, null);
+                    }
 
-            @Override
-            public void onCancel() {
+                    @Override
+                    public void onCancel() {
 
-            }
-        });
+                    }
+                });
     }
 
-    class AsyncAnimator extends AsyncTask<Integer, Void, Bitmap>{
+}    /*class AsyncAnimator extends AsyncTask<Integer, Void, Bitmap>{
 
         private Marker marker;
 
@@ -195,4 +184,4 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-}
+}*/
