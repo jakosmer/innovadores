@@ -1,21 +1,32 @@
 package co.com.prototype.pokemap.Model.Repository;
 
+import java.util.HashMap;
 import java.util.List;
 
+import co.com.prototype.pokemap.Model.Beans.GymPosition;
 import co.com.prototype.pokemap.Model.Beans.PokemonPosition;
 
+import co.com.prototype.pokemap.Model.Beans.PokeStopPosition;
 import retrofit2.Call;
-import retrofit2.http.GET;
+import retrofit2.http.Body;
 import retrofit2.http.Headers;
-import retrofit2.http.Path;
+import retrofit2.http.POST;
 
 /**
  * Created by carlosmario on 17/07/2016.
  */
 public interface IApiContract {
 
-    @GET("findPokemon/{pokemonName}")
+    @POST("findActivePokemon")
     @Headers({"Accept: application/json" })
-    Call<List<PokemonPosition>> getPokemonPositions(@Path("pokemonName") String pokemonName);
+    Call<List<PokemonPosition>> getPokemonPositions(@Body HashMap<String, Object> body);
+
+    @POST("findPokeGym")
+    @Headers({"Accept: application/json" })
+    Call<List<GymPosition>> getGymPositions(@Body HashMap<String, Object> body);
+
+    @POST("findPokeStop")
+    @Headers({"Accept: application/json" })
+    Call<List<PokeStopPosition>> getPokeStopPositions(@Body HashMap<String, Object> body);
 
 }

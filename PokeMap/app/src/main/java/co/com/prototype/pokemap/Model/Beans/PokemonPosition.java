@@ -5,29 +5,46 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by carlosmario on 17/07/2016.
  */
-public class PokemonPosition {
+public class PokemonPosition extends ObjectPokemonGo {
 
-    @SerializedName("city")
-    String city;
+    @SerializedName("id")
+    private int id;
 
     @SerializedName("name")
-    String name_;
+    private String name_;
 
-    @SerializedName("country")
-    String country;
+    @SerializedName("timeToHide")
+    private String timeToHide;
 
-    @SerializedName("lon")
-    String longitude;
+    public PokemonPosition(int id, String name, String timeToHide, Position position){
+        super(position);
 
-    @SerializedName("lat")
-    String latitude;
-
-    public PokemonPosition(String city, String name, String country, String longitude, String latitude){
-        this.city = city;
+        this.id = id;
         this.name_ = name;
-        this.country = country;
-        this.longitude = longitude;
-        this.latitude = latitude;
+        this.timeToHide = timeToHide;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName_() {
+        return name_;
+    }
+
+    public void setName_(String name_) {
+        this.name_ = name_;
+    }
+
+    public String getTimeToHide() {
+        return timeToHide;
+    }
+
+    public void setTimeToHide(String timeToHide) {
+        this.timeToHide = timeToHide;
+    }
 }
