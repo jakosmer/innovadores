@@ -1,4 +1,4 @@
-package co.com.prototype.pokemap.Model.Repository;
+package co.com.prototype.pokemap.Model.Services;
 
 import java.util.HashMap;
 import java.util.List;

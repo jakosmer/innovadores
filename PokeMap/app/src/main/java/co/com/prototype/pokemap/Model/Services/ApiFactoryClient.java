@@ -1,4 +1,4 @@
-package co.com.prototype.pokemap.Model.Repository;
+package co.com.prototype.pokemap.Model.Services;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
