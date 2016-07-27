@@ -1,30 +1,44 @@
 package co.com.prototype.pokemap;
 
 
-import org.androidannotations.annotations.EBean;
-import org.androidannotations.rest.spring.annotations.RestService;
+import android.util.Log;
+
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.util.List;
 
 import co.com.prototype.pokemap.Model.Beans.PokemonPosition;
+import co.com.prototype.pokemap.Model.Repository.ApiClient;
+import co.com.prototype.pokemap.Model.Repository.IApiContract;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by carlosmario on 17/07/2016.
  */
 
-@EBean
 public class RestClientTest {
 
-    @RestService
-    co.com.prototype.pokemap.Model.Repository.RestService service;
 
     @Test
     public void getPokemonByNameTest(){
-        List<PokemonPosition> pos = service.getPokemonPositions("pikachu");
 
-        assert( pos.size() > 0  );
+        IApiContract endPoints = ApiClient.getClient(IApiContract.class);
+
+        Call<List<PokemonPosition>> caller = endPoints.getPokemonPositions("Pikachu");
+        caller.enqueue(new Callback<List<PokemonPosition>>() {
+            @Override
+            public void onResponse(Call<List<PokemonPosition>> call, Response<List<PokemonPosition>> response) {
+                List<PokemonPosition> pos = response.body();
+            }
+
+            @Override
+            public void onFailure(Call<List<PokemonPosition>> call, Throwable t) {
+                Log.e("PKMERROR", t.getMessage());
+            }
+        });
+
     }
 
 }

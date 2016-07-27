@@ -35,10 +35,7 @@ android {
 }
 
 apply plugin: 'com.android.application' //or apply plugin: 'java'
-apply plugin: 'android-apt'
 apply plugin: 'me.tatarka.retrolambda'
-
-def AAVersion = '4.0.0'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -48,35 +45,19 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.google.android.gms:play-services-maps:9.2.1'
     compile 'com.android.support:design:23.4.0'
-    compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE' //spring for android : http://projects.spring.io/spring-android/
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.3.2'
     compile 'org.greenrobot:eventbus:3.0.0' // https://github.com/codepath/android_guides/wiki/Communicating-with-an-Event-Bus
-    compile 'frankiesardo:icepick:3.2.0' //https://github.com/frankiesardo/icepick
-    provided 'frankiesardo:icepick-processor:3.2.0'
+    //compile 'frankiesardo:icepick:3.2.0' //https://github.com/frankiesardo/icepick
+    //provided 'frankiesardo:icepick-processor:3.2.0'
 
-    apt "org.androidannotations:androidannotations:$AAVersion"
-    compile "org.androidannotations:androidannotations-api:$AAVersion"
+    compile 'com.github.Grover-c13:PokeGOAPI-Java:master-SNAPSHOT'
 
-    apt "org.androidannotations:rest-spring:$AAVersion"
-    compile "org.androidannotations:rest-spring-api:$AAVersion"
+    compile 'com.google.code.gson:gson:2.6.2'
+    compile 'com.squareup.retrofit2:retrofit:2.1.0' //retrofit: http://square.github.io/retrofit/
+    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
 
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.0'
     androidTestCompile 'com.android.support.test:testing-support-lib:0.1'
     androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.0') {
         exclude module: 'support-annotations'
-    }
-}
-
-apt {
-    arguments {
-        androidManifestFile variant.outputs[0]?.processResources?.manifestFile
-        // if you have multiple outputs (when using splits), you may want to have other index than 0
-
-        // you should set your package name here if you are using different application IDs
-        // resourcePackageName "your.package.name"
-
-        // You can set optional annotation processing options here, like these commented options:
-        // logLevel 'INFO'
-        // logFile '/var/log/aa.log'
     }
 }
