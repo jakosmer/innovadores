@@ -10,8 +10,8 @@ import java.util.List;
 
 import co.com.prototype.pokemap.Model.Beans.PokemonPosition;
 import co.com.prototype.pokemap.Model.Beans.Position;
-import co.com.prototype.pokemap.Model.Repository.ApiFactoryClient;
-import co.com.prototype.pokemap.Model.Repository.IApiContract;
+import co.com.prototype.pokemap.Model.Services.ApiFactoryClient;
+import co.com.prototype.pokemap.Model.Services.IApiContract;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
