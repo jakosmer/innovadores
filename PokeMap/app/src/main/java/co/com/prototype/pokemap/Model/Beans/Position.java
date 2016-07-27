@@ -1,12 +1,16 @@
 package co.com.prototype.pokemap.Model.Beans;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by carlviar on 2016/07/27.
  */
 public class Position {
 
+    @SerializedName("latitud")
     private Double latitud;
 
+    @SerializedName("longitud")
     private Double longitud;
 
     public Position(Double latitud, Double longitud){

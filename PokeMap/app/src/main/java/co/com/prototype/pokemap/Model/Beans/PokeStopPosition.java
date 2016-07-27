@@ -1,13 +1,16 @@
 package co.com.prototype.pokemap.Model.Beans;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by carlviar on 2016/07/27.
  */
-public class StopPosition extends ObjectPokemonGo {
+public class PokeStopPosition extends ObjectPokemonGo {
 
+    @SerializedName("description")
     private String description;
 
-    public StopPosition(String description, Position position){
+    public PokeStopPosition(String description, Position position){
         super(position);
 
         this.description = description;
