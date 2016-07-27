@@ -56,7 +56,7 @@ trait Protocols extends DefaultJsonProtocol {
   implicit val ipPairSummaryRequestFormat = jsonFormat2(IpPairSummaryRequest.apply)
   implicit val ipPairSummaryFormat = jsonFormat3(IpPairSummary.apply)
   implicit val pokemonPositionFormat = jsonFormat2(Position.apply)
-  implicit val pokemonInfoFormat = jsonFormat3(PokemonPosition.apply)
+  implicit val pokemonInfoFormat = jsonFormat4(PokemonPosition.apply)
   implicit val findPokemonFormat = jsonFormat3(FindPokemon.apply)
 
   implicit val findGymFormat = jsonFormat2(Gym.apply)
@@ -73,18 +73,18 @@ trait Service extends Protocols {
   val logger: LoggingAdapter
 
   val pokemonList = List(
-    PokemonPosition("Pikachu", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Magikarp", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Rattata", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Hitmonchan", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Snorlax", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Jynx", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Grimer", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Koffing", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Drowzee", 0, Some(Position(-123.0881,38.3845))),
-    PokemonPosition("Drowzee", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Ditto", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Squirtle", 0, Some(Position(-122.0881,37.3845)))
+    PokemonPosition(1, "Pikachu", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(2, "Magikarp", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(3, "Rattata", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(4, "Hitmonchan", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(5, "Snorlax", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(6, "Jynx", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(7, "Grimer", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(8, "Koffing", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(9, "Drowzee", 0, Some(Position(-123.0881,38.3845))),
+    PokemonPosition(10, "Drowzee", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(11, "Ditto", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(12, "Squirtle", 0, Some(Position(-122.0881,37.3845)))
   )
 
   lazy val ipApiConnectionFlow: Flow[HttpRequest, HttpResponse, Any] =
