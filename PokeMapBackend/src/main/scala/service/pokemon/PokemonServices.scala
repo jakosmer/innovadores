@@ -16,7 +16,7 @@ import scala.collection.JavaConversions._
   */
 class PokemonServices {
 
-  def getNearPokemon(findPokemon : FindPokemon) : List[PokemonPosition] = {
+  def getNearPokemon(findPokemon: FindPokemon): List[PokemonPosition] = {
     val http: OkHttpClient = new OkHttpClient
     var auth: RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo = null
 
@@ -36,7 +36,7 @@ class PokemonServices {
       val catchablePokemon: List[CatchablePokemon] = go.getMap.getCatchablePokemon.toList
       println("Pokemon in area:" + catchablePokemon.size)
 
-      catchablePokemon.foreach( cp => {
+      catchablePokemon.foreach(cp => {
         val encResult: EncounterResult = cp.encounterPokemon
         if (encResult.wasSuccessful) {
           println("Encounted:" + cp.getPokemonId)
@@ -50,9 +50,9 @@ class PokemonServices {
       val nearPokemonList: List[NearbyPokemon] = go.getMap.getNearbyPokemon().toList
       println("Pokemon in area:" + nearPokemonList.size)
 
-      nearPokemonList.foreach( cp => {
+      nearPokemonList.foreach(cp => {
         val distance = cp.getDistanceInMeters
-          println("Encounted:" + cp.getPokemonId + "  Distance: " + distance)
+        println("Encounted:" + cp.getPokemonId + "  Distance: " + distance)
         //listPokemons = listPokemons ++ List(PokemonPosition(cp.getPokemonId.name, None, None, None, None))
       })
 
@@ -68,12 +68,11 @@ class PokemonServices {
   }
 
 
-  def getGyms(findPokemon : FindPokemon) : List[Gym] =  {
+  def getGyms(findPokemon: FindPokemon): List[Gym] = {
     val http: OkHttpClient = new OkHttpClient
     var auth: RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo = null
 
     try {
-
       val builder: RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo.Builder = RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo.newBuilder
       builder.setProvider("google")
       builder.setToken(RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo.JWT.newBuilder.setContents(findPokemon.token).setUnknown2(59).build)
@@ -85,13 +84,10 @@ class PokemonServices {
       val spawnPoints: MapObjects = go.getMap.getMapObjects()
 
       println("Point in area:" + spawnPoints.isComplete)
-
       println("Gyms :" + spawnPoints.getGyms.size())
+
       val listGyms = spawnPoints.getGyms.toList.map(gym => Gym(gym.getOwnedByTeam.name, Position(gym.getLatitude, gym.getLongitude)))
-
-
       listGyms
-
     }
     catch {
       case e: Any => {
@@ -101,9 +97,12 @@ class PokemonServices {
     }
   }
 
-  def getPokeStop(findPokemon : FindPokemon) : List[Stop] = {
+  def getPokeStop(findPokemon: FindPokemon): List[Stop] = {
     val http: OkHttpClient = new OkHttpClient
     var auth: RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo = null
+
+    // var listPokeParadas = List[Stop]()
+
     try {
       val builder: RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo.Builder = RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo.newBuilder
       builder.setProvider("google")
@@ -116,11 +115,15 @@ class PokemonServices {
       val spawnPoints: MapObjects = go.getMap.getMapObjects()
 
       println("Point in area:" + spawnPoints.isComplete)
-
       println("PokeStops :" + spawnPoints.getPokestops.size())
-      val listPokeStop : List[Stop] = spawnPoints.getPokestops.toList.map( stop => Stop(stop.getDetails.getDescription, Position(stop.getLatitude, stop.getLongitude)))
 
-      listPokeStop
+      // for(stop <- spawnPoints.getPokestops ){
+        //  listPokeParadas = listPokeParadas ++ List(Stop(stop.getDetails.getDescription, Position(stop.getLatitude, stop.getLongitude)))
+        // }
+
+     val pokeStops = spawnPoints.getPokestops.map(stop => Stop("", Position(stop.getLatitude, stop.getLongitude)))
+      pokeStops.toList
+
     }
     catch {
       case e: Any => {
@@ -131,8 +134,7 @@ class PokemonServices {
   }
 
 
-
-  def getCatchablePokemon  {
+  def getCatchablePokemon {
     val http: OkHttpClient = new OkHttpClient
     var auth: RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo = null
     try {
@@ -148,7 +150,7 @@ class PokemonServices {
       val catchablePokemon: List[CatchablePokemon] = go.getMap.getCatchablePokemon.toList
       println("Pokemon in area:" + catchablePokemon.size)
 
-      catchablePokemon.foreach( cp => {
+      catchablePokemon.foreach(cp => {
         val encResult: EncounterResult = cp.encounterPokemon
         if (encResult.wasSuccessful) {
           println("Encounted:" + cp.getPokemonId)
@@ -162,7 +164,7 @@ class PokemonServices {
 
       println("Point in area:" + spawnPoints.isComplete)
 
-      spawnPoints.getGyms.toList.foreach( cp => {
+      spawnPoints.getGyms.toList.foreach(cp => {
         println("latitud:" + cp.getLatitude)
         println("longitud:" + cp.getLongitude)
         println("nombre:" + cp.getSponsor.name)

@@ -185,8 +185,6 @@ trait Service extends Protocols {
           val pokemonService = new PokemonServices
           val respuesta = pokemonService.getPokeStop(findPokemon)
 
-          println(respuesta)
-
           complete {
             respuesta.toJson
           }
