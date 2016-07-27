@@ -34,27 +34,25 @@ android {
     }
 }
 
-apply plugin: 'com.android.application' //or apply plugin: 'java'
 apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'com.google.gms.google-services'
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.10'
-
     compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.google.android.gms:play-services-maps:9.2.1'
+    compile 'com.google.android.gms:play-services-maps:9.0.0'
+    compile 'com.google.android.gms:play-services-auth:9.0.0'
     compile 'com.android.support:design:23.4.0'
-    compile 'org.greenrobot:eventbus:3.0.0' // https://github.com/codepath/android_guides/wiki/Communicating-with-an-Event-Bus
+    compile 'org.greenrobot:eventbus:3.0.0'
+    // https://github.com/codepath/android_guides/wiki/Communicating-with-an-Event-Bus
     //compile 'frankiesardo:icepick:3.2.0' //https://github.com/frankiesardo/icepick
     //provided 'frankiesardo:icepick-processor:3.2.0'
-
-    compile 'com.github.Grover-c13:PokeGOAPI-Java:master-SNAPSHOT'
-
+    //compile 'com.github.Grover-c13:PokeGOAPI-Java:master-SNAPSHOT'
     compile 'com.google.code.gson:gson:2.6.2'
-    compile 'com.squareup.retrofit2:retrofit:2.1.0' //retrofit: http://square.github.io/retrofit/
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    //retrofit: http://square.github.io/retrofit/
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
-
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.0'
     androidTestCompile 'com.android.support.test:testing-support-lib:0.1'
     androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.0') {
