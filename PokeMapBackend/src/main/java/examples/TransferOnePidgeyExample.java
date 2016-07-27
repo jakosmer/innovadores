@@ -37,6 +37,7 @@ public class TransferOnePidgeyExample {
 		OkHttpClient http = new OkHttpClient();
 		RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo auth = null;
 		try {
+
 			//auth = new PtcLogin(http).login(com.pokegoapi.examples.ExampleLoginDetails.LOGIN, com.pokegoapi.examples.ExampleLoginDetails.PASSWORD);
 			// or google
 			auth = new com.pokegoapi.auth.GoogleLogin(http).login("", ""); // currently uses oauth flow so no user or pass needed

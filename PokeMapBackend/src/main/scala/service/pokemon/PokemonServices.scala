@@ -1,10 +1,10 @@
 package service.pokemon
 
-import POGOProtos.Enums.PokemonIdOuterClass
+import POGOProtos.Map.Pokemon.MapPokemonOuterClass.MapPokemon
 import POGOProtos.Networking.Envelopes.RequestEnvelopeOuterClass
 import com.pokegoapi.api.PokemonGo
 import com.pokegoapi.api.map.MapObjects
-import com.pokegoapi.api.map.pokemon.{CatchResult, CatchablePokemon, EncounterResult, NearbyPokemon}
+import com.pokegoapi.api.map.pokemon.{CatchResult, CatchablePokemon, EncounterResult}
 import com.pokegoapi.util.Log
 import dto._
 import okhttp3.OkHttpClient
@@ -33,31 +33,25 @@ class PokemonServices {
       //6.254010, -75.578931
       go.setLocation(findPokemon.position.get.latitud, findPokemon.position.get.longitud, 0)
 
-      val catchablePokemon: List[CatchablePokemon] = go.getMap.getCatchablePokemon.toList
+      val spawnPoints: MapObjects = go.getMap.getMapObjects(findPokemon.width)
+      val catchablePokemon: List[MapPokemon] = spawnPoints.getCatchablePokemons.toList
+
       println("Pokemon in area:" + catchablePokemon.size)
 
       catchablePokemon.foreach(cp => {
-        val encResult: EncounterResult = cp.encounterPokemon
-        if (encResult.wasSuccessful) {
-          println("Encounted:" + cp.getPokemonId)
-          val result: CatchResult = cp.catchPokemonWithRazzBerry
-          println("Attempt to catch:" + cp.getPokemonId + " " + result.getStatus)
-          println("Expire time:" + cp.getExpirationTimestampMs)
-          listPokemons = listPokemons ++ List(PokemonPosition(cp.getPokemonId.name, cp.getExpirationTimestampMs, Some(Position(cp.getLatitude, cp.getLongitude))))
-        }
+          listPokemons = listPokemons ++ List(PokemonPosition(cp.getPokemonId.getNumber, cp.getPokemonId.name, cp.getExpirationTimestampMs, Some(Position(cp.getLatitude, cp.getLongitude))))
       })
 
-      val nearPokemonList: List[NearbyPokemon] = go.getMap.getNearbyPokemon().toList
+      /*val nearPokemonList: List[NearbyPokemon] = go.getMap.getNearbyPokemon().toList
       println("Pokemon in area:" + nearPokemonList.size)
 
       nearPokemonList.foreach(cp => {
         val distance = cp.getDistanceInMeters
         println("Encounted:" + cp.getPokemonId + "  Distance: " + distance)
         //listPokemons = listPokemons ++ List(PokemonPosition(cp.getPokemonId.name, None, None, None, None))
-      })
+      })*/
 
       listPokemons
-
     }
     catch {
       case e: Any => {
@@ -81,7 +75,7 @@ class PokemonServices {
       val go: PokemonGo = new PokemonGo(auth, http)
       go.setLocation(findPokemon.position.get.latitud, findPokemon.position.get.longitud, 0)
       //val spawnPoints: MapObjects = go.getMap.getMapObjects(findPokemon.lat.get, findPokemon.lon.get)
-      val spawnPoints: MapObjects = go.getMap.getMapObjects()
+      val spawnPoints: MapObjects = go.getMap.getMapObjects(findPokemon.width)
 
       println("Point in area:" + spawnPoints.isComplete)
       println("Gyms :" + spawnPoints.getGyms.size())
@@ -99,20 +93,21 @@ class PokemonServices {
 
   def getPokeStop(findPokemon: FindPokemon): List[Stop] = {
     val http: OkHttpClient = new OkHttpClient
-    var auth: RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo = null
+    var auth: POGOProtos.Networking.Envelopes.RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo = null
 
     // var listPokeParadas = List[Stop]()
 
     try {
-      val builder: RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo.Builder = RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo.newBuilder
+      val builder: POGOProtos.Networking.Envelopes.RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo.Builder = POGOProtos.Networking.Envelopes.RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo.newBuilder
       builder.setProvider("google")
-      builder.setToken(RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo.JWT.newBuilder.setContents(findPokemon.token).setUnknown2(59).build)
+      builder.setToken(POGOProtos.Networking.Envelopes.RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo.JWT.newBuilder.setContents(findPokemon.token).setUnknown2(59).build)
       auth = builder.build
+
 
       val go: PokemonGo = new PokemonGo(auth, http)
       go.setLocation(findPokemon.position.get.latitud, findPokemon.position.get.longitud, 0)
       //val spawnPoints: MapObjects = go.getMap.getMapObjects(findPokemon.lat.get, findPokemon.lon.get)
-      val spawnPoints: MapObjects = go.getMap.getMapObjects()
+      val spawnPoints: MapObjects = go.getMap.getMapObjects(findPokemon.width)
 
       println("Point in area:" + spawnPoints.isComplete)
       println("PokeStops :" + spawnPoints.getPokestops.size())
