@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.util.List;
 
 import co.com.prototype.pokemap.Model.Beans.PokemonPosition;
+import co.com.prototype.pokemap.Model.Beans.Position;
 import co.com.prototype.pokemap.Model.Repository.ApiClient;
 import co.com.prototype.pokemap.Model.Repository.IApiContract;
 import retrofit2.Call;
@@ -26,7 +27,7 @@ public class RestClientTest {
 
         IApiContract endPoints = ApiClient.getClient(IApiContract.class);
 
-        Call<List<PokemonPosition>> caller = endPoints.getPokemonPositions("Pikachu");
+        Call<List<PokemonPosition>> caller = endPoints.getPokemonPositions("Pikachu", new Position(0.0,0.0));
         caller.enqueue(new Callback<List<PokemonPosition>>() {
             @Override
             public void onResponse(Call<List<PokemonPosition>> call, Response<List<PokemonPosition>> response) {

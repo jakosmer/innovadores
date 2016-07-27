@@ -28,6 +28,16 @@ import com.google.android.gms.maps.model.Tile;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
 
+import java.util.List;
+
+import co.com.prototype.pokemap.Model.Beans.PokemonPosition;
+import co.com.prototype.pokemap.Model.Beans.Position;
+import co.com.prototype.pokemap.Model.Repository.ApiClient;
+import co.com.prototype.pokemap.Model.Repository.IApiContract;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -69,8 +79,7 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
             .center(new LatLng(6.26718156, -75.58027267))
             .radius(300)
             .fillColor(Color.argb(150,84,162,208))
-            .strokeWidth(1).strokeColor(Color.argb(150,84,162,208))
-            .clickable(false);
+            .strokeWidth(1).strokeColor(Color.argb(150,84,162,208));
 
         // Get back the mutable Circle
         Circle circle = mMap.addCircle(circleOptions);
@@ -112,6 +121,23 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
             }
         });
         t.start();
+
+        /*IApiContract endPoints = ApiClient.getClient(IApiContract.class);
+
+        Call<List<PokemonPosition>> caller = endPoints.getPokemonPositions("eyJhbGciOiJSUzI1NiIsImtpZCI6IjUwNzgyYmNmMGE5NzQxZTZiZjkwMjY2ZGMzNTY4YWE5MDc5MWYxNmYifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhdF9oYXNoIjoiU2d5amtXN0tzWlZKTG1MLVUxUDNIUSIsImF1ZCI6Ijg0ODIzMjUxMTI0MC03M3JpM3Q3cGx2azk2cGo0Zjg1dWo4b3RkYXQyYWxlbS5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsInN1YiI6IjExMTQyMTY1MjcxMjA1NzEwMDc1MCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhenAiOiI4NDgyMzI1MTEyNDAtNzNyaTN0N3Bsdms5NnBqNGY4NXVqOG90ZGF0MmFsZW0uYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJlbWFpbCI6ImFhcmlhc3RhQGdtYWlsLmNvbSIsImlhdCI6MTQ2OTYzMTk5NCwiZXhwIjoxNDY5NjM1NTk0fQ.T2P0EPPC8m4-q7vaFtRShjSQK_v4IyGI3AYBn5Wg1BCCVW8iWKij4kyhX1ibL-Q9x0bQS8xzujmeloybDhhCL04wfzCOzWWD815zQAXbtKlmJtSvnCtkpWoo1OoRepp_A3zJzd7H6RKiWEUcNMpzDB4ppHZgtQgfY7lC2lgM-pTPSjRq1rjr-OGqJnS9oIbjgvaZq8b-k4XrwbYyFPj5kl_trGcNxGyvt2QRLf5VZ1NrqPz7151tvyzE6bfpZ4CNONwuHMIi0PivYvkhSvyXLO-BdS3xKpjCGpyOmOqgpEC_QVKOUOluc7Wlvb2ixygNbiXMG40uH-f2egsGfPLntw",
+                                                                            new Position(6.26718156, -75.58027267));
+
+        caller.enqueue(new Callback<List<PokemonPosition>>() {
+            @Override
+            public void onResponse(Call<List<PokemonPosition>> call, Response<List<PokemonPosition>> response) {
+                List<PokemonPosition> pos = response.body();
+            }
+
+            @Override
+            public void onFailure(Call<List<PokemonPosition>> call, Throwable t) {
+                Log.e("PKMERROR", t.getMessage());
+            }
+        });*/
 
         //mMap.addMarker(new MarkerOptions().position(sydney).title("Med 1").icon(BitmapDescriptorFactory.fromResource(R.drawable.p_1)));
 
