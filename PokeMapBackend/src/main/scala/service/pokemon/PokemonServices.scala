@@ -43,7 +43,7 @@ class PokemonServices {
           val result: CatchResult = cp.catchPokemonWithRazzBerry
           println("Attempt to catch:" + cp.getPokemonId + " " + result.getStatus)
           println("Expire time:" + cp.getExpirationTimestampMs)
-          listPokemons = listPokemons ++ List(PokemonPosition(cp.getPokemonId.name, cp.getExpirationTimestampMs, Some(Position(cp.getLatitude, cp.getLongitude))))
+          listPokemons = listPokemons ++ List(PokemonPosition(cp.getPokemonId.getNumber, cp.getPokemonId.name, cp.getExpirationTimestampMs, Some(Position(cp.getLatitude, cp.getLongitude))))
         }
       })
 
@@ -99,15 +99,16 @@ class PokemonServices {
 
   def getPokeStop(findPokemon: FindPokemon): List[Stop] = {
     val http: OkHttpClient = new OkHttpClient
-    var auth: RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo = null
+    var auth: POGOProtos.Networking.Envelopes.RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo = null
 
     // var listPokeParadas = List[Stop]()
 
     try {
-      val builder: RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo.Builder = RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo.newBuilder
+      val builder: POGOProtos.Networking.Envelopes.RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo.Builder = POGOProtos.Networking.Envelopes.RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo.newBuilder
       builder.setProvider("google")
-      builder.setToken(RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo.JWT.newBuilder.setContents(findPokemon.token).setUnknown2(59).build)
+      builder.setToken(POGOProtos.Networking.Envelopes.RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo.JWT.newBuilder.setContents(findPokemon.token).setUnknown2(59).build)
       auth = builder.build
+
 
       val go: PokemonGo = new PokemonGo(auth, http)
       go.setLocation(findPokemon.position.get.latitud, findPokemon.position.get.longitud, 0)

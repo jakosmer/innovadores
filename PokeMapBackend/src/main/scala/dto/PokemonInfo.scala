@@ -7,7 +7,7 @@ case  class PokemonInfo(name : String , typePokemon: String)
 
 case  class FindPokemon(token : String, name : Option[String], position: Option[Position])
 
-case  class PokemonPosition(name : String, timetohide : Long, position: Option[Position])
+case  class PokemonPosition(id : Int, name : String, timeToHide : Long, position: Option[Position])
 
 case  class Position(latitud : Double, longitud : Double)
 
