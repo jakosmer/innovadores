@@ -8,9 +8,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.v4.util.Pools;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Polygon;
 
 import java.util.List;
 
@@ -43,7 +45,8 @@ public class MarkerCounter {
         int i = 0;
 
         AsyncAnimator animator = new AsyncAnimator();
-        animator.execute(i);
+        animator.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, i);
+
     }
 
     public void destroyMarker(){
