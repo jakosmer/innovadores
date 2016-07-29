@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -20,13 +22,24 @@ public class MarkerManager {
 
     private GoogleMap mapa;
     private Resources resources;
+    private String paquete;
 
-    public MarkerManager(GoogleMap mMap, Resources res){
+    public MarkerManager(GoogleMap mMap, Resources res, String paquete){
         this.mapa = mMap;
         this.resources = res;
+        this.paquete = paquete;
     }
 
-    public void addMarker(LatLng position, String namePokemon){
+    public Marker addMarkerGeneric(LatLng position){
+
+        Marker marker = mapa.addMarker(new MarkerOptions().position(position)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_p2_48x48))
+                .draggable(true));
+
+        return  marker;
+    }
+
+    public void addMarkerPokemon(LatLng position, String namePokemon){
 
         int pokemon = R.drawable.p_3;
 
@@ -38,13 +51,28 @@ public class MarkerManager {
         color.setColor(Color.BLACK);
 
         Canvas canvas = new Canvas(bmp);
-        canvas.drawBitmap(BitmapFactory.decodeResource(this.resources, pokemon ), 0,0, color);
 
-        MarkerOptions options = new MarkerOptions().position(position).title("Nombre Poke").icon(BitmapDescriptorFactory.fromBitmap(bmp)).anchor(0.5f, 1);
+        //canvas.drawBitmap(BitmapFactory.decodeResource(this.resources, pokemon ), 0,0, color);
+
+        MarkerOptions options = new MarkerOptions().position(position).title("Nombre Poke").icon(BitmapDescriptorFactory.fromResource(R.drawable.pikachu));
         Marker marker =  mapa.addMarker(options);
 
         MarkerCounter counter = new MarkerCounter(marker, this.resources, bmp, canvas);
         counter.startCounter();
     }
 
+    public void addMarkerGym(LatLng position, String team){
+
+        try {
+            team = team.toLowerCase();
+            String name = "battle_arena_"+team+"_80";
+            //name = "marker96x96.png";
+
+            int id = resources.getIdentifier(name, "drawable", this.paquete);
+            mapa.addMarker(new MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromResource(id)));
+
+        }catch (Exception e){
+            Log.e("addMarkerGym",e.getMessage());
+        }
+    }
 }

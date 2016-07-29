@@ -8,10 +8,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.internal.zzf;
 
 import java.util.List;
 
@@ -41,47 +39,62 @@ public class MarkerCounter {
 
         int i = 0;
 
-        while(true) {
-            i++;
-            AsyncAnimator animator = new AsyncAnimator(marker, canvas);
-            animator.execute(i);
-            if(i > 20){
-                //destroy();
-                break;
-            }
-        }
+        AsyncAnimator animator = new AsyncAnimator();
+        animator.execute(i);
     }
 
-    public void destroy(){
+    public void destroyMarker(){
         marker.remove();
+        marker = null;
     }
 
-    public class AsyncAnimator extends AsyncTask<Integer, Void, Bitmap> {
-
-        private Marker marker;
-        private Canvas canvas;
-
-
-        public AsyncAnimator(Marker marker, Canvas canvas){
-            this.marker = marker;
-            this.canvas = canvas;
-        }
-
+    public class AsyncAnimator extends AsyncTask<Integer, Bitmap, Void> {
 
         @Override
-        protected Bitmap doInBackground(Integer... params) {
-            try {
-                Thread.sleep(1000);
-            }catch (Exception e){
+        protected Void doInBackground(Integer... params) {
+            int i = params[0];
+
+            while(true) {
+                i++;
+
+                if(i > 20){
+                    break;
+                }
+
+                Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+                Bitmap bmp = Bitmap.createBitmap(200, 200, conf);
+
+                Canvas canvas = new Canvas(bmp);
+
+                canvas.drawBitmap(BitmapFactory.decodeResource(res, R.drawable.pikachu), 0, 0, color);
+                canvas.drawText("Contador " + String.valueOf(i), 30, 40, color);
+
+                publishProgress(bmp);
+
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                }
+
             }
-            this.canvas.drawText("Contador " + String.valueOf(params[0]), 30, 40, color);
-            return bmp;
+
+            return null;
         }
 
         @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            super.onPostExecute(bitmap);
-            this.marker.setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
+        protected void onProgressUpdate(Bitmap... values) {
+            super.onProgressUpdate(values);
+
+            if(marker != null) {
+                marker.setIcon(BitmapDescriptorFactory.fromBitmap(values[0]));
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            destroyMarker();
         }
     }
 

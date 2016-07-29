@@ -1,15 +1,9 @@
 package co.com.prototype.pokemap;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,21 +16,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Tile;
-import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.google.android.gms.maps.model.TileProvider;
-
-import java.util.List;
-
-import co.com.prototype.pokemap.Model.Beans.PokemonPosition;
-import co.com.prototype.pokemap.Model.Beans.Position;
-import co.com.prototype.pokemap.Model.Repository.ApiClient;
-import co.com.prototype.pokemap.Model.Repository.IApiContract;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
@@ -71,14 +51,15 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         //LocationService prueba = new LocationService();
 
 
+
         GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
 
         LatLng sydney = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
 
 
-        MarkerManager markerManager = new MarkerManager(mMap,getResources());
+        MarkerManager markerManager = new MarkerManager(mMap,getResources(), this.getActivity().getPackageName());
 
-        markerManager.addMarker(sydney, "p_3");
+        markerManager.addMarkerPokemon(sydney, "p_3");
 
 
         CircleOptions circleOptions = new CircleOptions()
@@ -128,7 +109,7 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         });
         t.start(); */
 
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Med 1").icon(BitmapDescriptorFactory.fromResource(R.drawable.bulbasaur)));
+        //mMap.addMarker(new MarkerOptions().position(sydney).title("Med 1").icon(BitmapDescriptorFactory.fromResource(R.drawable.bulbasaur)));
 
         mMap.addMarker(new MarkerOptions().position(new LatLng(6.25532226, -75.5848217)).title("Med 3").icon(BitmapDescriptorFactory.fromResource(R.drawable.squirtle)));
         /*mMap.addMarker(new MarkerOptions().position(new LatLng(6.23603966, -75.56619644)).title("Med 4").icon(BitmapDescriptorFactory.fromResource(R.drawable.pikachu)));
