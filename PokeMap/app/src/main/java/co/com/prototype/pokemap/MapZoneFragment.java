@@ -57,9 +57,14 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         LatLng sydney = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
 
 
-        MarkerManager markerManager = new MarkerManager(mMap,getResources(), this.getActivity().getPackageName());
 
-        markerManager.addMarkerPokemon(sydney, "p_3");
+
+        //markerManager.addMarkerPokemon(sydney, "p_3");
+
+        for (int i=0;i<2;i++){
+            MarkerManager markerManager = new MarkerManager(mMap,getResources(), this.getActivity().getPackageName());
+            markerManager.addMarkerPokemon(generateRadomGpsLocation(sydney), "p_3");
+        }
 
 
         CircleOptions circleOptions = new CircleOptions()
@@ -127,6 +132,24 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
                     }
                 });
+    }
+
+    private LatLng generateRadomGpsLocation(LatLng actualPos){
+
+        double y0 = actualPos.latitude;
+        double x0 = actualPos.longitude;
+        double radio = 2000f / 111300;
+
+        double seedRadomA = Math.random();
+        double seedRadomB = Math.random();
+
+        double w = radio * Math.sqrt(seedRadomA);
+        double t = 2 * Math.PI * seedRadomB;
+
+        double x = w * Math.cos(t);
+        double y = w * Math.sin(t);
+
+        return new LatLng( (y + y0), (x + x0) );
     }
 
 }    /*class AsyncAnimator extends AsyncTask<Integer, Void, Bitmap>{

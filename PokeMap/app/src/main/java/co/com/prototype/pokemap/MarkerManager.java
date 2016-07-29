@@ -15,6 +15,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by jorgmecs on 2016/07/27.
  */
@@ -56,6 +60,13 @@ public class MarkerManager {
 
         MarkerOptions options = new MarkerOptions().position(position).title("Nombre Poke").icon(BitmapDescriptorFactory.fromResource(R.drawable.pikachu));
         Marker marker =  mapa.addMarker(options);
+
+        //int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
+
+        //LinkedBlockingQueue cola = new LinkedBlockingQueue();
+        //ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(4,4,60, TimeUnit.SECONDS,cola);
+
+
 
         MarkerCounter counter = new MarkerCounter(marker, this.resources, bmp, canvas);
         counter.startCounter();

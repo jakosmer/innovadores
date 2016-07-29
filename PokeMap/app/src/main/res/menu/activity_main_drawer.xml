@@ -4,19 +4,19 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_poketips"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/bombillo24x24"
             android:title="PokeTips" />
         <item
             android:id="@+id/nav_pokemon"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/pokebolla24x24"
             android:title="Buscar Pokemon" />
         <item
             android:id="@+id/nav_pokeparadas"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/stop24x24"
             android:title="Pokeparadas" />
         <item
             android:id="@+id/nav_gyms"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/gym24x24"
             android:title="Gimnasios" />
     </group>
 

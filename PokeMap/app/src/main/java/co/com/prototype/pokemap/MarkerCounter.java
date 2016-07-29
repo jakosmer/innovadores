@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
+import android.os.Build;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
@@ -34,7 +35,9 @@ public class MarkerCounter {
 
     public void startCounter() {
         color = new Paint();
-        color.setTextSize(20);
+        color.setTextSize(15);
+        color.setFakeBoldText(true);
+        color.setTextAlign(Paint.Align.CENTER);
         color.setColor(Color.BLACK);
 
         int i = 0;
@@ -62,12 +65,19 @@ public class MarkerCounter {
                 }
 
                 Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-                Bitmap bmp = Bitmap.createBitmap(200, 200, conf);
+                Bitmap bmp = Bitmap.createBitmap(80, 90, conf);
 
                 Canvas canvas = new Canvas(bmp);
 
-                canvas.drawBitmap(BitmapFactory.decodeResource(res, R.drawable.pikachu), 0, 0, color);
-                canvas.drawText("Contador " + String.valueOf(i), 30, 40, color);
+                Paint paint = new Paint();
+                paint.setColor(Color.argb(50,43,223,243));
+                paint.setStyle(Paint.Style.FILL);
+
+
+                canvas.drawRect(15,70,55,90,paint);
+
+                canvas.drawBitmap(BitmapFactory.decodeResource(res, R.drawable.marker_p2_64x64), 0, 0, color);
+                canvas.drawText(String.valueOf(i), 30, 85, color);
 
                 publishProgress(bmp);
 
