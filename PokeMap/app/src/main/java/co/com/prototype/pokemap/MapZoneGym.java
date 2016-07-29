@@ -1,7 +1,110 @@
 package co.com.prototype.pokemap;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+
 /**
  * Created by jorgmecs on 2016/07/27.
  */
-public class MapZoneGym {
+public class MapZoneGym extends Fragment implements OnMapReadyCallback {
+
+    private GoogleMap mMap;
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_map_zone, container, false);
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        return view;
+    }
+
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        if (ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        }
+
+        GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
+        LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 3));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(12)
+                , 1000, new GoogleMap.CancelableCallback() {
+                    @Override
+                    public void onFinish() {
+                        mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                    }
+                });
+
+        MarkerManager markerManager = new MarkerManager(mMap,getResources(), this.getActivity().getPackageName());
+
+        final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
+
+        markerManager.addMarkerGym(new LatLng(6.26718156, -75.58027267), "RED");
+        markerManager.addMarkerGym(new LatLng(6.25133355, -75.56647539), "RED");
+        markerManager.addMarkerGym(new LatLng(6.25730594, -75.55932999), "BLUE");
+        markerManager.addMarkerGym(new LatLng(6.25171749, -75.56819201), "YELLOW");
+
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if (myPosition[0] != null) {
+                    myPosition[0].remove();
+                }
+                myPosition[0] = markerManager.addMarkerGeneric(latLng);
+            }
+        });
+
+        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
+                LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
+                if (myPosition[0] != null) {
+                    myPosition[0].remove();
+                }
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
+                myPosition[0] = markerManager.addMarkerGeneric(loc);
+
+                return true;
+            }
+        });
+    }
 }

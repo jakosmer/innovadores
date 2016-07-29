@@ -101,14 +101,14 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         Fragment fragment = null;
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_poketips) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_pokemon) {
             fragment = new MapZoneFragment();
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
+        } else if (id == R.id.nav_pokeparadas) {
+            //fragment = new MapZonePokeStop();
+        } else if (id == R.id.nav_gyms) {
+            fragment = new MapZoneGym();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
