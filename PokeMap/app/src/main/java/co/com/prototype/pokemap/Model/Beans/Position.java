@@ -1,5 +1,6 @@
 package co.com.prototype.pokemap.Model.Beans;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -32,5 +33,9 @@ public class Position {
 
     public void setLongitud(Double longitud) {
         this.longitud = longitud;
+    }
+
+    public LatLng convertToLatLng(){
+        return new LatLng(this.latitud, this.longitud);
     }
 }
