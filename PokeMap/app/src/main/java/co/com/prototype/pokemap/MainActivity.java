@@ -1,5 +1,6 @@
 package co.com.prototype.pokemap;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 
@@ -31,21 +33,25 @@ public class MainActivity extends AppCompatActivity
         ActionBar bar = getSupportActionBar();
         assert bar != null;
         bar.setCustomView(R.xml.actionbar_view);
-        EditText search = (EditText) bar.getCustomView().findViewById(R.id.searchfield);
+        /*EditText search = (EditText) bar.getCustomView().findViewById(R.id.searchfield);
         search.setOnEditorActionListener((v, actionId, event) -> {
 
             Toast.makeText(MainActivity.this, "Search triggered",
                     Toast.LENGTH_LONG).show();
             return false;
-        });
+        });*/
 
         bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM
                 | ActionBar.DISPLAY_SHOW_HOME);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        ImageView fab = (ImageView) findViewById(R.id.imgBtnPGO);
         assert fab != null;
-        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show());
+        fab.setOnClickListener(view ->  {
+            Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.cyanogenmod.filemanager");
+            if (launchIntent != null) {
+                startActivity(launchIntent);//null pointer check in case package name was not found
+            }
+        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         assert drawer != null;

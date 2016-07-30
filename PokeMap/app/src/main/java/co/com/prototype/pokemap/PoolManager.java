@@ -20,10 +20,10 @@ public class PoolManager {
     private static final TimeUnit KEEP_ALIVE_TIME_UNIT;
 
     // Sets the initial threadpool size to 8
-    private static final int CORE_POOL_SIZE = 8;
+    private static final int CORE_POOL_SIZE = 100;
 
     // Sets the maximum threadpool size to 8
-    private static final int MAXIMUM_POOL_SIZE = 20;
+    private static final int MAXIMUM_POOL_SIZE = 100;
 
     private static PoolManager instance;
 

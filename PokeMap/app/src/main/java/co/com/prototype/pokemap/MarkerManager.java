@@ -2,11 +2,9 @@ package co.com.prototype.pokemap;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -15,9 +13,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import co.com.prototype.pokemap.Model.Beans.PokemonPosition;
+
 
 /**
  * Created by jorgmecs on 2016/07/27.
@@ -43,9 +40,12 @@ public class MarkerManager {
         return  marker;
     }
 
-    public void addMarkerPokemon(LatLng position, String namePokemon){
+    public void addMarkerPokemon(PokemonPosition pokemonPosition){
 
-        int pokemon = R.drawable.p_3;
+        String idPoke = String.valueOf(pokemonPosition.getId());
+        String icoName = "p_"+idPoke;
+
+        int id = resources.getIdentifier(icoName, "drawable", this.paquete);
 
         Bitmap.Config conf = Bitmap.Config.ARGB_8888;
         Bitmap bmp = Bitmap.createBitmap(200, 200, conf);
@@ -56,20 +56,11 @@ public class MarkerManager {
 
         Canvas canvas = new Canvas(bmp);
 
-        //canvas.drawBitmap(BitmapFactory.decodeResource(this.resources, pokemon ), 0,0, color);
-
-        MarkerOptions options = new MarkerOptions().position(position).title("Nombre Poke").icon(BitmapDescriptorFactory.fromResource(R.drawable.pikachu));
+        MarkerOptions options = new MarkerOptions().position(pokemonPosition.getPosition().convertToLatLng()).title(pokemonPosition.getName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.pikachu));
         Marker marker =  mapa.addMarker(options);
 
-        //int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
-
-        //LinkedBlockingQueue cola = new LinkedBlockingQueue();
-        //ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(4,4,60, TimeUnit.SECONDS,cola);
-
-
-
         MarkerCounter counter = new MarkerCounter(marker, this.resources, bmp, canvas);
-        counter.startCounter();
+        counter.startCounter(Long.parseLong(pokemonPosition.getTimeToHide()));
     }
 
     public void addMarkerGym(LatLng position, String team){
@@ -77,7 +68,6 @@ public class MarkerManager {
         try {
             team = team.toLowerCase();
             String name = "battle_arena_"+team+"_80";
-            //name = "marker96x96.png";
 
             int id = resources.getIdentifier(name, "drawable", this.paquete);
             mapa.addMarker(new MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromResource(id)));

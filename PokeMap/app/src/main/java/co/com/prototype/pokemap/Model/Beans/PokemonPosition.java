@@ -32,11 +32,11 @@ public class PokemonPosition extends ObjectPokemonGo {
         this.id = id;
     }
 
-    public String getName_() {
+    public String getName() {
         return name_;
     }
 
-    public void setName_(String name_) {
+    public void setName(String name_) {
         this.name_ = name_;
     }
 
