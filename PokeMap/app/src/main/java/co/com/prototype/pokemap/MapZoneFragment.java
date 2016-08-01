@@ -1,10 +1,13 @@
 package co.com.prototype.pokemap;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +21,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
@@ -61,20 +65,25 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        if (ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        }
 
         GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
         LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
         MarkerManager markerManager = new MarkerManager(mMap, getResources(), this.getActivity().getPackageName());
 
-        markerManager.addMarkerGeneric(loc);
+        final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
+
         //getPositions(markerManager);
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 1; i < 10; i++) {
             LatLng pos = generateRadomGpsLocation(loc);
             Position position = new Position(pos.latitude,pos.longitude);
             Random random = new Random();
             PokemonPosition pokemonPosition = new PokemonPosition
-                    (1,"pica", String.valueOf(SystemClock.currentThreadTimeMillis() +
+                    (i,"p_00"+i, String.valueOf(SystemClock.currentThreadTimeMillis() +
                             ((random.nextInt(600 - 100) + 100) * 1000)),position);
             markerManager.addMarkerPokemon(pokemonPosition);
         }
@@ -88,17 +97,42 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 3));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(12)
-                , 1000, new GoogleMap.CancelableCallback() {
-                    @Override
-                    public void onFinish() {
-                        mMap.animateCamera(CameraUpdateFactory.zoomTo(12), 2000, null);
-                    }
+            , 1000, new GoogleMap.CancelableCallback() {
+                @Override
+                public void onFinish() {
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(12), 2000, null);
+                }
 
-                    @Override
-                    public void onCancel() {
+                @Override
+                public void onCancel() {
 
-                    }
-                });
+                }
+            });
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if (myPosition[0] != null) {
+                    myPosition[0].remove();
+                }
+                myPosition[0] = markerManager.addMarkerGeneric(latLng);
+            }
+        });
+
+        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
+                LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
+                if (myPosition[0] != null) {
+                    myPosition[0].remove();
+                }
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
+                myPosition[0] = markerManager.addMarkerGeneric(loc);
+
+                return true;
+            }
+        });
     }
 
     private LatLng generateRadomGpsLocation(LatLng actualPos) {

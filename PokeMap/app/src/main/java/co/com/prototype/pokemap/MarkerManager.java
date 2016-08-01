@@ -34,7 +34,7 @@ public class MarkerManager {
     public Marker addMarkerGeneric(LatLng position){
 
         Marker marker = mapa.addMarker(new MarkerOptions().position(position)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_p2_48x48))
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_p2_64x64))
                 .draggable(true));
 
         return  marker;
@@ -43,7 +43,7 @@ public class MarkerManager {
     public void addMarkerPokemon(PokemonPosition pokemonPosition){
 
         String idPoke = String.valueOf(pokemonPosition.getId());
-        String icoName = "p_"+idPoke;
+        String icoName = "p_00"+idPoke;
 
         int id = resources.getIdentifier(icoName, "drawable", this.paquete);
 
@@ -56,7 +56,7 @@ public class MarkerManager {
 
         Canvas canvas = new Canvas(bmp);
 
-        MarkerOptions options = new MarkerOptions().position(pokemonPosition.getPosition().convertToLatLng()).title(pokemonPosition.getName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.pikachu));
+        MarkerOptions options = new MarkerOptions().position(pokemonPosition.getPosition().convertToLatLng()).title(pokemonPosition.getName()).icon(BitmapDescriptorFactory.fromResource(id));
         Marker marker =  mapa.addMarker(options);
 
         MarkerCounter counter = new MarkerCounter(marker, this.resources, bmp, canvas);

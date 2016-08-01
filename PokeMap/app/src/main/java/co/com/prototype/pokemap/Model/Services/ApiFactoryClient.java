@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class ApiFactoryClient {
 
-    static final String BASE_URL = "http://10.201.78.203:9000/";
+    static final String BASE_URL = "http://192.168.72.1:9000/";
     private static IApiContract endPoints = null;
 
     public static IApiContract getClient(Class<IApiContract> endPoints){

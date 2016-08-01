@@ -12,6 +12,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -21,7 +22,6 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,23 +33,20 @@ public class MainActivity extends AppCompatActivity
         ActionBar bar = getSupportActionBar();
         assert bar != null;
         bar.setCustomView(R.xml.actionbar_view);
-        /*EditText search = (EditText) bar.getCustomView().findViewById(R.id.searchfield);
-        search.setOnEditorActionListener((v, actionId, event) -> {
-
-            Toast.makeText(MainActivity.this, "Search triggered",
-                    Toast.LENGTH_LONG).show();
-            return false;
-        });*/
-
-        bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM
+                bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM
                 | ActionBar.DISPLAY_SHOW_HOME);
 
         ImageView fab = (ImageView) findViewById(R.id.imgBtnPGO);
         assert fab != null;
         fab.setOnClickListener(view ->  {
-            Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.cyanogenmod.filemanager");
+            Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.nianticlabs.pokemongo");
             if (launchIntent != null) {
-                startActivity(launchIntent);//null pointer check in case package name was not found
+                startActivity(launchIntent);
+            }else{
+                Toast toast = Toast.makeText(MainActivity.this, "PokemonGO not found",
+                        Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
             }
         });
 
@@ -118,17 +115,19 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
-
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        assert drawer != null;
-        drawer.closeDrawer(GravityCompat.START);
-
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragment).commit();
-
+        if(fragment!= null){
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            assert drawer != null;
+            drawer.closeDrawer(GravityCompat.START);
+            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragment).commit();
+        }else{
+            Toast toast = Toast.makeText(MainActivity.this, "Under construction",
+                    Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER,0,0);
+            toast.show();
+        }
         return true;
     }
-
-
 }
