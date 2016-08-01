@@ -27,7 +27,7 @@ class PokemonServices {
 
       var auth:CredentialProvider = null
 
-      if(findPokemon.token.isDefined){
+      if(findPokemon.token.isDefined && findPokemon.token.isEmpty ){
         //val auth2 = new PtcCredentialProvider(http, ExampleLoginDetails.LOGIN, ExampleLoginDetails.PASSWORD);
         auth = new GoogleCredentialProvider(http, findPokemon.token.get); // currently uses oauth flow so no user or pass needed
       }else{
@@ -74,7 +74,7 @@ class PokemonServices {
     try {
       var auth:CredentialProvider = null
 
-      if(findPokemon.token.isDefined){
+      if(findPokemon.token.isDefined && findPokemon.token.isEmpty){
         //val auth2 = new PtcCredentialProvider(http, ExampleLoginDetails.LOGIN, ExampleLoginDetails.PASSWORD);
         auth = new GoogleCredentialProvider(http, findPokemon.token.get); // currently uses oauth flow so no user or pass needed
       }else{
@@ -109,7 +109,7 @@ class PokemonServices {
     try {
       var auth:CredentialProvider = null
 
-      if(findPokemon.token.isDefined){
+      if(findPokemon.token.isDefined && findPokemon.token.isEmpty){
         println("autenticando con token en google")
         //val auth2 = new PtcCredentialProvider(http, ExampleLoginDetails.LOGIN, ExampleLoginDetails.PASSWORD);
         auth = new GoogleCredentialProvider(http, findPokemon.token.get); // currently uses oauth flow so no user or pass needed
