@@ -8,9 +8,9 @@
 
     <ImageButton
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/imgBtnPGO"
-        android:src="@drawable/pokemon_go_icon96x96"
+        android:src="@drawable/pokego55"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="8dp"
