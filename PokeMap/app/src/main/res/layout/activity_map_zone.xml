@@ -13,9 +13,6 @@ android:orientation="vertical">
         android:layout_height="match_parent"
         tools:context=".MapZoneFragment" />
 
-    <TextView
-        android:id="@+id/txtview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+
 
 </LinearLayout>

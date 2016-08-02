@@ -76,7 +76,7 @@ public class MarkerCounter {
                         canvas.drawRoundRect(5,70,55,90,5,5,paint);
                     }else
                         canvas.drawRect(5,70,55,90,paint);
-                    canvas.drawBitmap(BitmapFactory.decodeResource(res, R.drawable.p_006), 0, 0, color);
+                    canvas.drawBitmap(BitmapFactory.decodeResource(res, R.drawable.p_001), 0, 0, color);
                     canvas.drawText(timeCalculate(millisUntilFinished), 30, 85, color);
 
                     publishProgress(bmp);
