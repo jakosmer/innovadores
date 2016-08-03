@@ -6,17 +6,17 @@ package co.com.prototype.pokemap.Security;
  *
  * Objeto que representa una credencial (solo google por el momento)
  */
-public class PokeSecurityCredential{
+public class PokeCredential {
 
-    public static String TOKEN_ATTR = "co.com.prototype.pokemap.Security.PokeSecurityCredential.Token";
-    public static String EMAIL_ATTR = "co.com.prototype.pokemap.Security.PokeSecurityCredential.Email";
-    public static String USERNAME_ATTR = "co.com.prototype.pokemap.Security.PokeSecurityCredential.UserName";
+    public static String TOKEN_ATTR = "co.com.prototype.pokemap.Security.PokeCredential.Token";
+    public static String EMAIL_ATTR = "co.com.prototype.pokemap.Security.PokeCredential.Email";
+    public static String USERNAME_ATTR = "co.com.prototype.pokemap.Security.PokeCredential.UserName";
 
     private String token;
     private String email;
     private String username;
 
-    public PokeSecurityCredential(String token, String email, String username) {
+    public PokeCredential(String token, String email, String username) {
         this.token = token;
         this.email = email;
         this.username = username;

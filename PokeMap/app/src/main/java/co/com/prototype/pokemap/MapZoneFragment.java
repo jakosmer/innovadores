@@ -71,6 +71,8 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         }
 
         GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
+        LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
+        MarkerManager markerManager = new MarkerManager(mMap, getResources(), this.getActivity().getPackageName());
 
         final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
 

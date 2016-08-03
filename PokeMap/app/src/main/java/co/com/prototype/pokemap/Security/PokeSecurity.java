@@ -42,14 +42,14 @@ public class PokeSecurity {
     }
 
     /**
-     * Devuelve la credencial {@link PokeSecurityCredential} con los datos del usuario logueado
-     * @return {@link PokeSecurityCredential}
+     * Devuelve la credencial {@link PokeCredential} con los datos del usuario logueado
+     * @return {@link PokeCredential}
      */
-    public PokeSecurityCredential getCredential(){
+    public PokeCredential getCredential(){
 
-            return new PokeSecurityCredential(preferences.getString(PokeSecurityCredential.TOKEN_ATTR, null),
-                                          preferences.getString(PokeSecurityCredential.EMAIL_ATTR, null),
-                                          preferences.getString(PokeSecurityCredential.USERNAME_ATTR, null));
+            return new PokeCredential(preferences.getString(PokeCredential.TOKEN_ATTR, null),
+                                          preferences.getString(PokeCredential.EMAIL_ATTR, null),
+                                          preferences.getString(PokeCredential.USERNAME_ATTR, null));
     }
 
     /**
@@ -71,9 +71,9 @@ public class PokeSecurity {
                 Log.i(LOG_GOOGLE_STATE, "AuthToken: " + (authToken == null ? "" : authToken));
 
                 SharedPreferences.Editor editor = preferences.edit();
-                editor.putString(PokeSecurityCredential.TOKEN_ATTR, idToken);
-                editor.putString(PokeSecurityCredential.EMAIL_ATTR, acct.getEmail());
-                editor.putString(PokeSecurityCredential.USERNAME_ATTR, acct.getDisplayName());
+                editor.putString(PokeCredential.TOKEN_ATTR, idToken);
+                editor.putString(PokeCredential.EMAIL_ATTR, acct.getEmail());
+                editor.putString(PokeCredential.USERNAME_ATTR, acct.getDisplayName());
                 editor.apply();
 
                 return true;
@@ -93,7 +93,7 @@ public class PokeSecurity {
      */
     public void requestUserToken(){
 
-        if(!preferences.contains(PokeSecurityCredential.TOKEN_ATTR)){
+        if(!preferences.contains(PokeCredential.TOKEN_ATTR)){
             Intent intent = new Intent(activity, LoginActivity.class);
             activity.startActivity(intent);
         }
