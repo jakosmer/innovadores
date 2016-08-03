@@ -82,32 +82,20 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PokeSecurity.getInstance(this).startEntryPoint();
+
         setContentView(R.layout.activity_login);
         // Set up the login form.
 
         mProgressView = findViewById(R.id.login_progress);
 
-        //Google SignIn Configuration
-        GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                                                                   .requestEmail()
-                                                                   .requestServerAuthCode("401881601919-omjth38md0au6gbtoo3pgrv57ja5lal2.apps.googleusercontent.com")
-                                                                   .build();
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                                              .enableAutoManage(this, this)
-                                              .addApi(Auth.GOOGLE_SIGN_IN_API, signInOptions)
-                                              .build();
-
         View viewGoogleBtn =  findViewById(R.id.sign_in_button);
         if(viewGoogleBtn != null){
-            viewGoogleBtn.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    switch (v.getId()){
-                        case R.id.sign_in_button:
-                            GoogleSingIn();
-                            break;
-                    }
+            viewGoogleBtn.setOnClickListener(v -> {
+                switch (v.getId()){
+                    case R.id.sign_in_button:
+                        PokeSecurity.getInstance(LoginActivity.this).signIn(RC_SIGN_IN);
+                        break;
                 }
             });
         }
@@ -158,12 +146,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 populateAutoComplete();
             }
         }
-    }
-
-
-    private void GoogleSingIn(){
-        Intent singInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(singInIntent, RC_SIGN_IN);
     }
 
     /**
@@ -320,7 +302,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if(requestCode == RC_SIGN_IN){
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
 
-            PokeSecurity security = PokeSecurity.getInstance(this, mGoogleApiClient);
+            PokeSecurity security = PokeSecurity.getInstance(this);
             if(security.saveGoogleCredentials(result)){
                 security.startEntryPoint();
             }
