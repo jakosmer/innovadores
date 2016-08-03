@@ -10,8 +10,10 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -103,10 +105,36 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
         selectGym.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast toast = Toast.makeText(MapZoneGym.this.getContext(), "PokemonGO not found",
-                        Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.CENTER,0,0);
-                toast.show();
+//                Toast toast = Toast.makeText(MapZoneGym.this.getContext(), "PokemonGO not found",
+//                        Toast.LENGTH_LONG);
+//                toast.setGravity(Gravity.CENTER,0,0);
+//                toast.show();
+
+                PopupMenu popup = new PopupMenu(MapZoneGym.this.getContext(), selectGym);
+                //Inflating the Popup using xml file
+                popup.getMenuInflater()
+                        .inflate(R.menu.popup_menu_gyms, popup.getMenu());
+
+                //registering popup with OnMenuItemClickListener
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        mMap.clear();
+                        myPosition[0] = markerManager.addMarkerGeneric(loc);
+
+                        if (item.getTitle().equals("BLUE teams"))
+                            getPositions(markerManager,"BLUE");
+                        if (item.getTitle().equals("RED teams"))
+                            getPositions(markerManager,"RED");
+                        if (item.getTitle().equals("YELLOW teams"))
+                            getPositions(markerManager,"YELLOW");
+                        if (item.getTitle().equals("ALL teams"))
+                            getPositions(markerManager,"");
+
+                        return true;
+                    }
+                });
+
+                popup.show(); //showing popup menu
             }
         });
 
