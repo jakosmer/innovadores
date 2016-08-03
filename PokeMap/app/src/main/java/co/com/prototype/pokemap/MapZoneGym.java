@@ -4,11 +4,15 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -17,6 +21,18 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+
+import java.util.HashMap;
+import java.util.List;
+
+import co.com.prototype.pokemap.Model.Beans.GymPosition;
+import co.com.prototype.pokemap.Model.Beans.PokemonPosition;
+import co.com.prototype.pokemap.Model.Beans.Position;
+import co.com.prototype.pokemap.Model.Services.ApiFactoryClient;
+import co.com.prototype.pokemap.Model.Services.IApiContract;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by jorgmecs on 2016/07/27.
@@ -28,7 +44,7 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_map_zone, container, false);
+        View view = inflater.inflate(R.layout.activity_map_zone_gym, container, false);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -54,8 +70,13 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
             mMap.setMyLocationEnabled(true);
         }
 
+        FloatingActionButton selectGym = (FloatingActionButton)this.getActivity().findViewById(R.id.gym);
         GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
         LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
+        MarkerManager markerManager = new MarkerManager(mMap, getResources(), this.getActivity().getPackageName());
+        final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
+
+        getPositions(markerManager,"");
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 3));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(12)
@@ -72,15 +93,22 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
                     }
                 });
 
-        MarkerManager markerManager = new MarkerManager(mMap,getResources(), this.getActivity().getPackageName());
-
-        final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
-
-        markerManager.addMarkerGym(new LatLng(6.26718156, -75.58027267), "RED");
+        /*markerManager.addMarkerGym(new LatLng(6.26718156, -75.58027267), "RED");
         markerManager.addMarkerGym(new LatLng(6.25133355, -75.56647539), "RED");
         markerManager.addMarkerGym(new LatLng(6.25730594, -75.55932999), "BLUE");
-        markerManager.addMarkerGym(new LatLng(6.25171749, -75.56819201), "YELLOW");
+        markerManager.addMarkerGym(new LatLng(6.25171749, -75.56819201), "YELLOW");*/
 
+
+
+        selectGym.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast toast = Toast.makeText(MapZoneGym.this.getContext(), "PokemonGO not found",
+                        Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
+            }
+        });
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -104,6 +132,43 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
                 myPosition[0] = markerManager.addMarkerGeneric(loc);
 
                 return true;
+            }
+        });
+    }
+
+    private void getPositions(MarkerManager markerM, String team){
+        IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
+
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("token", "");
+        params.put("width", 9);
+        params.put("position", new Position(6.254010, -75.578931));
+        Call<List<GymPosition>> caller = endPoints.getGymPositions(params);
+
+        caller.enqueue(new Callback<List<GymPosition>>() {
+            @Override
+            public void onResponse(Call<List<GymPosition>> call, Response<List<GymPosition>> response) {
+                List<GymPosition> pos = response.body();
+
+                for (GymPosition gymPosition: pos){
+                    if(team.isEmpty())
+                        markerM.addMarkerGym(gymPosition, gymPosition.getTeamColor());
+
+                    if (team.equals("RED") && gymPosition.getTeamColor().equals("RED")){
+                        markerM.addMarkerGym(gymPosition, team);
+                    }
+                    if (team.equals("BLUE") && gymPosition.getTeamColor().equals("BLUE")){
+                        markerM.addMarkerGym(gymPosition, team);
+                    }
+                    if (team.equals("YELLOW") && gymPosition.getTeamColor().equals("YELLOW")){
+                        markerM.addMarkerGym(gymPosition, team);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<GymPosition>> call, Throwable t) {
+                Log.e("PKMERROR", "Error llamando servicio", t);
             }
         });
     }

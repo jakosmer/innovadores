@@ -13,6 +13,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import co.com.prototype.pokemap.Model.Beans.GymPosition;
 import co.com.prototype.pokemap.Model.Beans.PokemonPosition;
 
 
@@ -63,14 +64,14 @@ public class MarkerManager {
         counter.startCounter(Long.parseLong(pokemonPosition.getTimeToHide()));
     }
 
-    public void addMarkerGym(LatLng position, String team){
+    public void addMarkerGym(GymPosition gymPosition, String team){
 
         try {
             team = team.toLowerCase();
             String name = "battle_arena_"+team+"_80";
 
             int id = resources.getIdentifier(name, "drawable", this.paquete);
-            mapa.addMarker(new MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromResource(id)));
+            mapa.addMarker(new MarkerOptions().position(gymPosition.getPosition().convertToLatLng()).icon(BitmapDescriptorFactory.fromResource(id)));
 
         }catch (Exception e){
             Log.e("addMarkerGym",e.getMessage());
