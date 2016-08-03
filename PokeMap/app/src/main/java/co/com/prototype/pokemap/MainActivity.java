@@ -1,5 +1,6 @@
 package co.com.prototype.pokemap;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,11 +12,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import co.com.prototype.pokemap.Security.PokeSecurity;
@@ -23,7 +24,6 @@ import co.com.prototype.pokemap.Security.PokeSecurity;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,21 +37,22 @@ public class MainActivity extends AppCompatActivity
         ActionBar bar = getSupportActionBar();
         assert bar != null;
         bar.setCustomView(R.xml.actionbar_view);
-        EditText search = (EditText) bar.getCustomView().findViewById(R.id.searchfield);
-        search.setOnEditorActionListener((v, actionId, event) -> {
-
-            Toast.makeText(MainActivity.this, "Search triggered",
-                    Toast.LENGTH_LONG).show();
-            return false;
-        });
-
-        bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM
+                bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM
                 | ActionBar.DISPLAY_SHOW_HOME);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        ImageView fab = (ImageView) findViewById(R.id.imgBtnPGO);
         assert fab != null;
-        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show());
+        fab.setOnClickListener(view ->  {
+            Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.nianticlabs.pokemongo");
+            if (launchIntent != null) {
+                startActivity(launchIntent);
+            }else{
+                Toast toast = Toast.makeText(MainActivity.this, "PokemonGO not found",
+                        Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
+            }
+        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         assert drawer != null;
@@ -107,28 +108,30 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         Fragment fragment = null;
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_poketips) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_pokemon) {
             fragment = new MapZoneFragment();
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
+        } else if (id == R.id.nav_pokeparadas) {
+            //fragment = new MapZonePokeStop();
+        } else if (id == R.id.nav_gyms) {
+            fragment = new MapZoneGym();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
-
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        assert drawer != null;
-        drawer.closeDrawer(GravityCompat.START);
-
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragment).commit();
-
+        if(fragment!= null){
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            assert drawer != null;
+            drawer.closeDrawer(GravityCompat.START);
+            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragment).commit();
+        }else{
+            Toast toast = Toast.makeText(MainActivity.this, "Under construction",
+                    Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER,0,0);
+            toast.show();
+        }
         return true;
     }
-
-
 }

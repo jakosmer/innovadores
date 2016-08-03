@@ -56,8 +56,8 @@ trait Protocols extends DefaultJsonProtocol {
   implicit val ipPairSummaryRequestFormat = jsonFormat2(IpPairSummaryRequest.apply)
   implicit val ipPairSummaryFormat = jsonFormat3(IpPairSummary.apply)
   implicit val pokemonPositionFormat = jsonFormat2(Position.apply)
-  implicit val pokemonInfoFormat = jsonFormat3(PokemonPosition.apply)
-  implicit val findPokemonFormat = jsonFormat3(FindPokemon.apply)
+  implicit val pokemonInfoFormat = jsonFormat4(PokemonPosition.apply)
+  implicit val findPokemonFormat = jsonFormat4(FindPokemon.apply)
 
   implicit val findGymFormat = jsonFormat2(Gym.apply)
   implicit val findStopFormat = jsonFormat2(Stop.apply)
@@ -73,18 +73,18 @@ trait Service extends Protocols {
   val logger: LoggingAdapter
 
   val pokemonList = List(
-    PokemonPosition("Pikachu", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Magikarp", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Rattata", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Hitmonchan", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Snorlax", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Jynx", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Grimer", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Koffing", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Drowzee", 0, Some(Position(-123.0881,38.3845))),
-    PokemonPosition("Drowzee", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Ditto", 0, Some(Position(-122.0881,37.3845))),
-    PokemonPosition("Squirtle", 0, Some(Position(-122.0881,37.3845)))
+    PokemonPosition(1, "Pikachu", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(2, "Magikarp", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(3, "Rattata", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(4, "Hitmonchan", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(5, "Snorlax", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(6, "Jynx", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(7, "Grimer", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(8, "Koffing", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(9, "Drowzee", 0, Some(Position(-123.0881,38.3845))),
+    PokemonPosition(10, "Drowzee", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(11, "Ditto", 0, Some(Position(-122.0881,37.3845))),
+    PokemonPosition(12, "Squirtle", 0, Some(Position(-122.0881,37.3845)))
   )
 
   lazy val ipApiConnectionFlow: Flow[HttpRequest, HttpResponse, Any] =
@@ -150,8 +150,6 @@ trait Service extends Protocols {
           } else {
             "Los parametros para la busqueda no pueden arrojar resutlados"
           }
-          println("Respuesta: ")
-          println(respuesta)
 
           complete {
             respuesta.toJson
@@ -168,9 +166,6 @@ trait Service extends Protocols {
             }
           } ~ (post & entity(as[FindPokemon])) { findPokemon =>
 
-            println(findPokemon)
-            //https://pokevision.com/map/data/34.0089404989527/-118.49765539169312
-            //val respuesta  = CallRestService.getActivePokemons("https://pokevision.com/map/data/" ,findPokemon.lon.get.toString, findPokemon.lat.get.toString )
             val pokemonService = new PokemonServices
             val respuesta = pokemonService.getNearPokemon(findPokemon)
 
@@ -181,11 +176,8 @@ trait Service extends Protocols {
         }~ pathPrefix("findPokeStop") {
         (post & entity(as[FindPokemon])) { findPokemon =>
 
-          println(findPokemon)
           val pokemonService = new PokemonServices
           val respuesta = pokemonService.getPokeStop(findPokemon)
-
-          println(respuesta)
 
           complete {
             respuesta.toJson
@@ -194,11 +186,8 @@ trait Service extends Protocols {
       } ~ pathPrefix("findPokeGym") {
         (post & entity(as[FindPokemon])) { findPokemon =>
 
-          println(findPokemon)
           val pokemonService = new PokemonServices
           val respuesta = pokemonService.getGyms(findPokemon)
-
-          println(respuesta)
 
           complete {
             respuesta.toJson

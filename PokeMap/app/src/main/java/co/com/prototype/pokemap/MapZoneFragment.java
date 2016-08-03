@@ -1,9 +1,14 @@
 package co.com.prototype.pokemap;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +21,21 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import co.com.prototype.pokemap.Security.PokeSecurity;
-import co.com.prototype.pokemap.Security.PokeSecurityCredential;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+import co.com.prototype.pokemap.Model.Beans.PokemonPosition;
+import co.com.prototype.pokemap.Model.Beans.Position;
+import co.com.prototype.pokemap.Model.Services.ApiFactoryClient;
+import co.com.prototype.pokemap.Model.Services.IApiContract;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
@@ -49,44 +65,114 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        //LocationService prueba = new LocationService();
-
+        if (ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        }
 
         GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
 
-        LatLng sydney = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
+        final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
 
-        CircleOptions circleOptions = new CircleOptions()
-            .center(new LatLng(6.26718156, -75.58027267))
-            .radius(300)
-            .fillColor(Color.argb(150,84,162,208))
-            .strokeWidth(1).strokeColor(Color.argb(150,84,162,208));
+        getPositions(markerManager);
 
-        // Get back the mutable Circle
-        Circle circle = mMap.addCircle(circleOptions);
+//        for (int i = 1; i < 10; i++) {
+//            LatLng pos = generateRadomGpsLocation(loc);
+//            Position position = new Position(pos.latitude,pos.longitude);
+//            Random random = new Random();
+//            PokemonPosition pokemonPosition = new PokemonPosition
+//                    (i,"p_00"+i, String.valueOf(SystemClock.currentThreadTimeMillis() +
+//                            ((random.nextInt(600 - 100) + 100) * 1000)),position);
+//            markerManager.addMarkerPokemon(pokemonPosition);
+//        }
 
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Med 1").icon(BitmapDescriptorFactory.fromResource(R.drawable.p_1)));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(6.26718156, -75.58027267)).title("Med 2").icon(BitmapDescriptorFactory.fromResource(R.drawable.pikachu)));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(6.25532226, -75.5848217)).title("Med 3").icon(BitmapDescriptorFactory.fromResource(R.drawable.squirtle)));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(6.23603966, -75.56619644)).title("Med 4").icon(BitmapDescriptorFactory.fromResource(R.drawable.pikachu)));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(6.25958823, -75.5459404)).title("Med 5").icon(BitmapDescriptorFactory.fromResource(R.drawable.squirtle)));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,3));
+        /*CircleOptions circleOptions = new CircleOptions()
+                .center(new LatLng(6.26718156, -75.58027267))
+                .radius(300)
+                .fillColor(Color.argb(150, 84, 162, 208))
+                .strokeWidth(1).strokeColor(Color.argb(150, 84, 162, 208));
+        Circle circle = mMap.addCircle(circleOptions);*/
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 3));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(12)
-        , 1000, new GoogleMap.CancelableCallback() {
-            @Override
-            public void onFinish() {
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(12), 2000, null);
+            , 1000, new GoogleMap.CancelableCallback() {
+                @Override
+                public void onFinish() {
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(12), 2000, null);
+                }
 
-                PokeSecurityCredential credential = PokeSecurity.getInstance(getActivity()).getCredential();
+                @Override
+                public void onCancel() {
+
+                }
+            });
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if (myPosition[0] != null) {
+                    myPosition[0].remove();
+                }
+                myPosition[0] = markerManager.addMarkerGeneric(latLng);
             }
+        });
 
+        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
             @Override
-            public void onCancel() {
+            public boolean onMyLocationButtonClick() {
+                GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
+                LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
+                if (myPosition[0] != null) {
+                    myPosition[0].remove();
+                }
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
+                myPosition[0] = markerManager.addMarkerGeneric(loc);
 
+                return true;
             }
         });
     }
 
+    private LatLng generateRadomGpsLocation(LatLng actualPos) {
+        double y0 = actualPos.latitude;
+        double x0 = actualPos.longitude;
+        double radio = 2000f / 111300;
+
+        double seedRadomA = Math.random();
+        double seedRadomB = Math.random();
+
+        double w = radio * Math.sqrt(seedRadomA);
+        double t = 2 * Math.PI * seedRadomB;
+
+        double x = w * Math.cos(t);
+        double y = w * Math.sin(t);
+
+        return new LatLng((y + y0), (x + x0));
+    }
+
+    private void getPositions(MarkerManager markerM){
+        IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
+
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("token", "");
+        params.put("width", 9);
+        params.put("position", new Position(6.254010, -75.578931));
+        Call<List<PokemonPosition>> caller = endPoints.getPokemonPositions(params);
+
+        caller.enqueue(new Callback<List<PokemonPosition>>() {
+            @Override
+            public void onResponse(Call<List<PokemonPosition>> call, Response<List<PokemonPosition>> response) {
+                List<PokemonPosition> pos = response.body();
+
+                for (PokemonPosition pokemonPosition: pos){
+                    markerM.addMarkerPokemon(pokemonPosition);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<PokemonPosition>> call, Throwable t) {
+                Log.e("PKMERROR", "Error llamando servicio", t);
+            }
+        });
+    }
 }

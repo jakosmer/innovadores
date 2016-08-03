@@ -11,6 +11,8 @@ buildscript {
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8' //https://github.com/excilys/androidannotations/wiki/Building-Project-Gradle
         classpath 'com.google.gms:google-services:3.0.0'
 
+        classpath 'com.github.jcandksolutions.gradle:android-unit-test:2.1.1'
+
     }
 }
 
@@ -21,6 +23,7 @@ allprojects {
         mavenLocal()
         maven { url "https://clojars.org/repo/" }
         maven { url "https://repo.spring.io/libs-milestone" }
+        maven { url "https://jitpack.io" }
     }
 }
 
