@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -28,33 +30,35 @@ public class PokeSecurity {
 
     private Activity activity;
     private static PokeSecurity instance;
-    private SharedPreferences preferences;
     private GoogleApiClient googleApiClientInstance;
+
+    private SharedPreferences preferences;
     private static String LOG_GOOGLE_STATE = "co.com.prototype.pokemap.Security.PokeSecurity:GoogleState";
 
     private PokeSecurity(Activity activity){
         this.activity = activity;
 
         preferences = activity.getPreferences(Context.MODE_PRIVATE);
-    }
 
-    private PokeSecurity(Activity activity, GoogleApiClient googleApiClient){
-        this.activity = activity;
-        this.googleApiClientInstance = googleApiClient;
+        //Google SignIn Configuration
+        GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestServerAuthCode("401881601919-omjth38md0au6gbtoo3pgrv57ja5lal2.apps.googleusercontent.com")
+                .build();
 
-        preferences = activity.getPreferences(Context.MODE_PRIVATE);
+        googleApiClientInstance = new GoogleApiClient.Builder(activity)
+                .enableAutoManage((FragmentActivity) activity, (GoogleApiClient.OnConnectionFailedListener) activity)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, signInOptions)
+                .build();
     }
 
     public static PokeSecurity getInstance(Activity activity){
-        return getInstance(activity, null);
-    }
-
-    public static PokeSecurity getInstance(Activity activity, GoogleApiClient googleApiClient){
 
         if(instance == null){
-            instance = googleApiClient == null ? new PokeSecurity(activity) : new PokeSecurity(activity, googleApiClient);
+            instance = new PokeSecurity(activity);
         }
 
+        instance.activity = activity;
         return instance;
     }
 
@@ -111,8 +115,7 @@ public class PokeSecurity {
     public void requestUserToken(){
 
         if(!preferences.contains(PokeCredential.TOKEN_ATTR)){
-            Intent intent = new Intent(activity, LoginActivity.class);
-            activity.startActivity(intent);
+            startLoginPoint();
         }
 
     }
@@ -122,20 +125,52 @@ public class PokeSecurity {
      */
     public void startEntryPoint(){
 
-        Intent intent = new Intent(activity, MainActivity.class);
+        if(preferences.contains(PokeCredential.TOKEN_ATTR)) {
+            Intent intent = new Intent(activity, MainActivity.class);
+            activity.startActivity(intent);
+        }
+
+    }
+
+    /**
+     * Inicia la actividad para el acceso del usuario
+     */
+    public void startLoginPoint(){
+
+        Intent intent = new Intent(activity, LoginActivity.class);
         activity.startActivity(intent);
 
     }
 
+    /**
+     * Invoca la actividad de google para hacer sign-in
+     * @param idForResult codigo enviado en el callback onActivityResult que debe implementar la actividad consumidora
+     */
+    public void signIn(int idForResult){
 
+        Intent singInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClientInstance);
+        activity.startActivityForResult(singInIntent, idForResult);
+
+    }
+
+    /**
+     * Elimina los datos de sesion y reenvia hacia la actividad Login
+     */
     public void singOut(){
-        Auth.GoogleSignInApi.signOut(googleApiClientInstance).setResultCallback(new ResultCallback<Status>() {
-            @Override
-            public void onResult(@NonNull Status status) {
-                Intent intent = new Intent(activity, LoginActivity.class);
-                activity.startActivity(intent);
-            }
-        });
+
+        instance = null;
+        googleApiClientInstance = null;
+
+
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.remove(PokeCredential.TOKEN_ATTR);
+        editor.remove(PokeCredential.EMAIL_ATTR);
+        editor.remove(PokeCredential.USERNAME_ATTR);
+        editor.apply();
+
+        preferences = null;
+
+        startLoginPoint();
     }
 
 }
