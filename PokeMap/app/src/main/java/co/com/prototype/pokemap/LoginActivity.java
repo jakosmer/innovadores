@@ -42,6 +42,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import java.util.ArrayList;
 import java.util.List;
 
+import co.com.prototype.pokemap.Security.PokeSecurity;
+
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
@@ -182,26 +184,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private void GoogleSingIn(){
         Intent singInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(singInIntent, RC_SIGN_IN);
-    }
-
-    private void handleSignInResult(GoogleSignInResult result){
-
-        if(result.isSuccess()){
-            GoogleSignInAccount acct = result.getSignInAccount();
-            String idToken = acct.getIdToken();
-            String authToken = acct.getServerAuthCode();
-            String displayName = acct.getDisplayName();
-            String email = acct.getEmail();
-
-            Log.i(LOG_GOOGLE_STATE, idToken == null ? "" : idToken);
-            Log.i(LOG_GOOGLE_STATE, authToken == null ? "" : authToken);
-            Log.i(LOG_GOOGLE_STATE, displayName == null ? "" : displayName);
-            Log.i(LOG_GOOGLE_STATE, email == null ? "" : email);
-        }else{
-            String message = result.getStatus().getStatusMessage();
-            Log.i(LOG_GOOGLE_STATE, "conexion fallida: " + result.getStatus().getStatusMessage());
-        }
-
     }
 
     /**
@@ -357,7 +339,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         if(requestCode == RC_SIGN_IN){
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSignInResult(result);
+
+            PokeSecurity security = PokeSecurity.getInstance(this);
+            if(security.saveGoogleCredentials(result)){
+                security.startEntryPoint();
+            }
         }
     }
 

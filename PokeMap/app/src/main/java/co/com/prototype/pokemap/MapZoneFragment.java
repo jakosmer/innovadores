@@ -18,6 +18,9 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import co.com.prototype.pokemap.Security.PokeSecurity;
+import co.com.prototype.pokemap.Security.PokeSecurityCredential;
+
 public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -75,6 +78,8 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onFinish() {
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(12), 2000, null);
+
+                PokeSecurityCredential credential = PokeSecurity.getInstance(getActivity()).getCredential();
             }
 
             @Override
