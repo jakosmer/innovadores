@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/item_redTeam"
+        android:title="RED teams"
+        android:icon="@android:color/holo_red_dark"
+        android:visible="true"/>
+    <item
+        android:id="@+id/item_blueTeam"
+        android:title="BLUE teams"
+        android:icon="@android:color/holo_blue_dark"
+        android:visible="true"/>
+    <item
+        android:id="@+id/item_yellowTeam"
+        android:title="YELLOW teams"
+        android:icon="@android:color/holo_orange_light"
+        android:visible="true"/>
+    <item
+        android:id="@+id/item_allTeams"
+        android:title="ALL teams"
+        android:icon="@android:color/background_light"
+        android:visible="true"/>
+</menu>

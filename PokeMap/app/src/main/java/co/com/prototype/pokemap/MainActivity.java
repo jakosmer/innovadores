@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_pokemon) {
             fragment = new MapZoneFragment();
         } else if (id == R.id.nav_pokeparadas) {
-            //fragment = new MapZonePokeStop();
+            fragment = new MapZonePokeStop();
         } else if (id == R.id.nav_gyms) {
             fragment = new MapZoneGym();
         } else if (id == R.id.nav_share) {

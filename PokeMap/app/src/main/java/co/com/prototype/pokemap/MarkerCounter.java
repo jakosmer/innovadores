@@ -73,11 +73,11 @@ public class MarkerCounter {
                     paint.setStyle(Paint.Style.FILL_AND_STROKE);
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        canvas.drawRoundRect(5,70,55,90,5,5,paint);
+                        canvas.drawRoundRect(5,0,55,25,10,10,paint);
                     }else
-                        canvas.drawRect(5,70,55,90,paint);
-                    canvas.drawBitmap(BitmapFactory.decodeResource(res, R.drawable.p_001), 0, 0, color);
-                    canvas.drawText(timeCalculate(millisUntilFinished), 30, 85, color);
+                        canvas.drawRect(5,0,55,25,paint);
+                    canvas.drawBitmap(BitmapFactory.decodeResource(res, R.drawable.p_001), 0, 15, color);
+                    canvas.drawText(timeCalculate(millisUntilFinished), 30, 15, color);
 
                     publishProgress(bmp);
                 }
