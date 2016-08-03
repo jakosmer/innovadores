@@ -117,9 +117,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_gyms) {
             fragment = new MapZoneGym();
         } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-        }
+            PokeSecurity.getInstance(this).singOut();
+        } //else if (id == R.id.nav_send) {
+        //}
 
         if(fragment!= null){
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -84,33 +84,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        populateAutoComplete();
 
-        mPasswordView = (EditText) findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        if(mEmailSignInButton != null) {
-            mEmailSignInButton.setOnClickListener(view -> attemptLogin());
-        }
-
-        mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
         //Google SignIn Configuration
         GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                                                                    .requestEmail()
-                                                                   .requestIdToken("401881601919-omjth38md0au6gbtoo3pgrv57ja5lal2.apps.googleusercontent.com")
+                                                                   .requestServerAuthCode("401881601919-omjth38md0au6gbtoo3pgrv57ja5lal2.apps.googleusercontent.com")
                                                                    .build();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -340,7 +320,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if(requestCode == RC_SIGN_IN){
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
 
-            PokeSecurity security = PokeSecurity.getInstance(this);
+            PokeSecurity security = PokeSecurity.getInstance(this, mGoogleApiClient);
             if(security.saveGoogleCredentials(result)){
                 security.startEntryPoint();
             }
