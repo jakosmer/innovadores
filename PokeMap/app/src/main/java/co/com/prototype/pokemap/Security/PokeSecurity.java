@@ -12,6 +12,7 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
@@ -44,6 +45,8 @@ public class PokeSecurity {
         //Google SignIn Configuration
         GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
+                .requestProfile()
+                .requestScopes(new Scope(Scopes.EMAIL), new Scope(Scopes.APP_STATE), new Scope(Scopes.PROFILE))
                 .requestServerAuthCode("401881601919-omjth38md0au6gbtoo3pgrv57ja5lal2.apps.googleusercontent.com")
                 .build();
 
