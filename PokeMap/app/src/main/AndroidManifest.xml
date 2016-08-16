@@ -43,15 +43,15 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login" >
-        </activity>
-        <activity
-            android:name=".WebViewContainerActivity"
-            android:label="@string/title_activity_web_view_container" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".WebViewContainerActivity"
+            android:label="@string/title_activity_web_view_container" >
         </activity>
     </application>
 

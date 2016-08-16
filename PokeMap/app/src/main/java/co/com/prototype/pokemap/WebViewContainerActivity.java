@@ -1,8 +1,12 @@
 package co.com.prototype.pokemap;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.LoaderManager;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,12 +17,20 @@ import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 
-public class WebViewContainerActivity extends AppCompatActivity {
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+
+import co.com.prototype.pokemap.Security.PokeSecurity;
+
+public class WebViewContainerActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
+
+    public static final String PARAM_AUTH_CODE = "co.com.prototype.pokemap.WebViewContainerActivity.paramAuthCode";
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_web_view_container);
 
         WebView webView = (WebView)findViewById(R.id.webView);
@@ -55,6 +67,11 @@ public class WebViewContainerActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
     class LoadListener{
 
         @JavascriptInterface
@@ -63,7 +80,10 @@ public class WebViewContainerActivity extends AppCompatActivity {
             Log.e("result", html);
 
             Intent intent = new Intent(WebViewContainerActivity.this, LoginActivity.class);
-            startActivity(intent);
+            intent.putExtra(PARAM_AUTH_CODE, html);
+
+            setResult(Activity.RESULT_OK, intent);
+            finish();
         }
     }
 

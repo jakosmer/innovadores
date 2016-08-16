@@ -20,6 +20,7 @@ import com.google.android.gms.common.api.Status;
 
 import co.com.prototype.pokemap.LoginActivity;
 import co.com.prototype.pokemap.MainActivity;
+import co.com.prototype.pokemap.WebViewContainerActivity;
 
 /**
  * @author Carlos Mario Villadiego
@@ -114,6 +115,30 @@ public class PokeSecurity {
     }
 
     /**
+     * Almacena una credencial google en las sharedPreferences del usuario
+     * @param authCode codigo de authorización del usuario
+     * @return True si se logra almacenar la credencial, False en otro caso
+     */
+    public boolean saveGoogleCredentials(String authCode){
+
+            try {
+
+                Log.i(LOG_GOOGLE_STATE, "AuthToken: " + (authCode == null ? "" : authCode));
+
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString(PokeCredential.TOKEN_ATTR, authCode);
+                editor.apply();
+
+                return true;
+
+            }catch (Exception ne){
+                Log.e(LOG_GOOGLE_STATE, "Hubo un problema obteniendo el token de autenticación", ne);
+            }
+
+        return false;
+    }
+
+    /**
      * Comprueba la existencia de un token y en caso que no se encuentre, se redirige hacia la actividad Login
      */
     public void requestUserToken(){
@@ -152,7 +177,7 @@ public class PokeSecurity {
      */
     public void signIn(int idForResult){
 
-        Intent singInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClientInstance);
+        Intent singInIntent = new Intent(activity, WebViewContainerActivity.class);//Auth.GoogleSignInApi.getSignInIntent(googleApiClientInstance);
         activity.startActivityForResult(singInIntent, idForResult);
 
     }

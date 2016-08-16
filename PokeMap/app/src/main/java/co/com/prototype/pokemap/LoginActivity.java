@@ -76,12 +76,21 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     //Google client for make singIn
     GoogleApiClient mGoogleApiClient;
-    private static final int RC_SIGN_IN = 1;
+    public static final int RC_SIGN_IN = 1;
     private static final String LOG_GOOGLE_STATE = "PGO_GOOGLE_STATE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /*Intent intentFromWebView = getIntent();
+        if(intentFromWebView != null){
+            Object authCode = intentFromWebView.getExtras().get(WebViewContainerActivity.PARAM_AUTH_CODE);
+            if(authCode != null) {
+                PokeSecurity.getInstance(this).saveGoogleCredentials(authCode.toString());
+            }
+        }*/
+
         PokeSecurity.getInstance(this).startEntryPoint();
 
         setContentView(R.layout.activity_login);
@@ -300,10 +309,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == RC_SIGN_IN){
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-
+            //GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            Object authCode = data.getExtras().get(WebViewContainerActivity.PARAM_AUTH_CODE);
             PokeSecurity security = PokeSecurity.getInstance(this);
-            if(security.saveGoogleCredentials(result)){
+            if(authCode != null && security.saveGoogleCredentials(authCode.toString())){
                 security.startEntryPoint();
             }
         }
