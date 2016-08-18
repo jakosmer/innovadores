@@ -23,6 +23,8 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.leo.simplearcloader.ArcConfiguration;
+import com.leo.simplearcloader.SimpleArcDialog;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +35,8 @@ import co.com.prototype.pokemap.Model.Beans.PokemonPosition;
 import co.com.prototype.pokemap.Model.Beans.Position;
 import co.com.prototype.pokemap.Model.Services.ApiFactoryClient;
 import co.com.prototype.pokemap.Model.Services.IApiContract;
+import co.com.prototype.pokemap.Security.PokeCredential;
+import co.com.prototype.pokemap.Security.PokeSecurity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -40,6 +44,8 @@ import retrofit2.Response;
 public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    SimpleArcDialog mDialog;
+
 
     @Nullable
     @Override
@@ -70,13 +76,22 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
             mMap.setMyLocationEnabled(true);
         }
 
+
+        SimpleArcDialog mDialog = new SimpleArcDialog(getContext());
+        mDialog.setConfiguration(new ArcConfiguration(this.getActivity()));
+        mDialog.show();
+
         GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
         LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
         MarkerManager markerManager = new MarkerManager(mMap, getResources(), this.getActivity().getPackageName());
 
         final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
 
+
+
         getPositions(markerManager);
+
+
 
 //        for (int i = 1; i < 10; i++) {
 //            LatLng pos = generateRadomGpsLocation(loc);
@@ -153,12 +168,17 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void getPositions(MarkerManager markerM){
-        IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
 
+        PokeSecurity pokeSecurity = PokeSecurity.getInstance(getActivity());
+        PokeCredential pokeCredential = pokeSecurity.getCredential();
+
+
+        IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
         HashMap<String, Object> params = new HashMap<>();
-        params.put("token", "");
+        params.put("token", "1/tonF2rg3bavTh84gxnN9OC3_xLVr5YK5ZO1xWwNeGmE");
+//        params.put("token", pokeCredential.getToken());
         params.put("width", 9);
-        params.put("position", new Position(6.254010, -75.578931));
+        params.put("position", new Position(6.2538345, -75.57843804));
         Call<List<PokemonPosition>> caller = endPoints.getPokemonPositions(params);
 
         caller.enqueue(new Callback<List<PokemonPosition>>() {

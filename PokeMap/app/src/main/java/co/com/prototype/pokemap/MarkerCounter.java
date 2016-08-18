@@ -29,19 +29,20 @@ public class MarkerCounter {
     protected Paint color;
     private Resources res;
     private Canvas canvas;
+    private int idPoke;
 
 
-    public MarkerCounter(Marker  marker, Resources res, Bitmap bmp, Canvas canvas) {
+    public MarkerCounter(Marker  marker, Resources res, Bitmap bmp, Canvas canvas, int idPoke) {
         this.marker = marker;
         this.bmp = bmp;
         this.res = res;
         this.canvas = canvas;
+        this.idPoke = idPoke;
     }
 
     public void startCounter(long timeToHide) {
         color = new Paint();
-        color.setTextSize(15);
-        color.setFakeBoldText(true);
+        color.setTextSize(12);
         color.setTextAlign(Paint.Align.CENTER);
         color.setColor(Color.BLACK);
 
@@ -76,7 +77,7 @@ public class MarkerCounter {
                         canvas.drawRoundRect(5,0,55,25,10,10,paint);
                     }else
                         canvas.drawRect(5,0,55,25,paint);
-                    canvas.drawBitmap(BitmapFactory.decodeResource(res, R.drawable.p_001), 0, 15, color);
+                    canvas.drawBitmap(BitmapFactory.decodeResource(res, idPoke), 0, 15, color);
                     canvas.drawText(timeCalculate(millisUntilFinished), 30, 15, color);
 
                     publishProgress(bmp);
