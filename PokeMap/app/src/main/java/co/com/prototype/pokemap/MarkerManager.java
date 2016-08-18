@@ -98,7 +98,7 @@ public class MarkerManager {
 //            team = team.toLowerCase();
 //            String name = "battle_arena_"+team+"_80";
 //            int id = resources.getIdentifier(name, "drawable", this.paquete);
-            mapa.addMarker(new MarkerOptions().position(pokeStopPosition.getPosition().convertToLatLng()).icon(BitmapDescriptorFactory.fromResource(R.drawable.pokestop)));
+            mapa.addMarker(new MarkerOptions().position(pokeStopPosition.getPosition().convertToLatLng()).icon(BitmapDescriptorFactory.fromResource(R.drawable.pokestop30x50)));
 
         }catch (Exception e){
             Log.e("addMarkerGym",e.getMessage());
