@@ -1,7 +1,9 @@
 package co.com.prototype.pokemap;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -78,22 +80,26 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
         MarkerManager markerManager = new MarkerManager(mMap, getResources(), this.getActivity().getPackageName());
         final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
 
-        getPositions(markerManager,"");
+        TaskAnimation taskAnimation = new TaskAnimation(markerManager,"");
+        taskAnimation.execute();
+
+//        getPositions(markerManager,"");
+
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 3));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(12)
-                , 1000, new GoogleMap.CancelableCallback() {
-                    @Override
-                    public void onFinish() {
-                        mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
-                    }
+            , 1000, new GoogleMap.CancelableCallback() {
+            @Override
+            public void onFinish() {
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
+            }
 
-                    @Override
-                    public void onCancel() {
+            @Override
+            public void onCancel() {
 
-                    }
-                });
+            }
+        });
 
         /*markerManager.addMarkerGym(new LatLng(6.26718156, -75.58027267), "RED");
         markerManager.addMarkerGym(new LatLng(6.25133355, -75.56647539), "RED");
@@ -121,14 +127,26 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
                         mMap.clear();
                         myPosition[0] = markerManager.addMarkerGeneric(loc);
 
-                        if (item.getTitle().equals("BLUE teams"))
-                            getPositions(markerManager,"BLUE");
-                        if (item.getTitle().equals("RED teams"))
-                            getPositions(markerManager,"RED");
-                        if (item.getTitle().equals("YELLOW teams"))
-                            getPositions(markerManager,"YELLOW");
-                        if (item.getTitle().equals("ALL teams"))
-                            getPositions(markerManager,"");
+                        if (item.getTitle().equals("BLUE teams")){
+                            TaskAnimation taskAnimation = new TaskAnimation(markerManager,"BLUE");
+                            taskAnimation.execute();
+                            //getPositions(markerManager,"BLUE");
+                        }
+                        if (item.getTitle().equals("RED teams")){
+                            TaskAnimation taskAnimation = new TaskAnimation(markerManager,"RED");
+                            taskAnimation.execute();
+//                            getPositions(markerManager,"RED");
+                        }
+                        if (item.getTitle().equals("YELLOW teams")){
+                            TaskAnimation taskAnimation = new TaskAnimation(markerManager,"YELLOW");
+                            taskAnimation.execute();
+//                            getPositions(markerManager,"YELLOW");
+                        }
+                        if (item.getTitle().equals("ALL teams")){
+                            TaskAnimation taskAnimation = new TaskAnimation(markerManager,"");
+                            taskAnimation.execute();
+//                            getPositions(markerManager,"");
+                        }
 
                         return true;
                     }
@@ -164,7 +182,7 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    private void getPositions(MarkerManager markerM, String team){
+    private void getPositions(MarkerManager markerM, String team, ProgressDialog dialog){
         IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
 
         HashMap<String, Object> params = new HashMap<>();
@@ -177,6 +195,8 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
             @Override
             public void onResponse(Call<List<GymPosition>> call, Response<List<GymPosition>> response) {
                 List<GymPosition> pos = response.body();
+
+                dialog.dismiss();
 
                 for (GymPosition gymPosition: pos){
                     if(team.isEmpty())
@@ -200,4 +220,48 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
             }
         });
     }
+
+    class TaskAnimation extends AsyncTask<Void, String, Void> {
+
+        String color;
+        MarkerManager markerManager;
+        ProgressDialog progressDialog;
+
+
+        public  TaskAnimation(MarkerManager marker,String color){
+            this.color = color;
+            this.markerManager = marker;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                getPositions(markerManager,color, progressDialog);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(Void result) {
+            // execution of result of Long time consuming operation
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = ProgressDialog.show(getContext(),
+                    "Gyms",
+                    "Loading information");
+        }
+
+
+        @Override
+        protected void onProgressUpdate(String... text) {
+            //finalResult.setText(text[0]);
+        }
+    }
+
 }

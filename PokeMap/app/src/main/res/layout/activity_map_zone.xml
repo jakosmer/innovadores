@@ -13,14 +13,4 @@
         android:layout_height="match_parent"
         tools:context=".MapZoneFragment" />
 
-    <com.leo.simplearcloader.SimpleArcLoader
-        android:visibility="visible"
-        android:id="@+id/loader"
-        android:layout_centerInParent="true"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        custom:arc_style="simple_arc"
-        custom:arc_speed="medium"
-        custom:arc_margin="3dp">
-    </com.leo.simplearcloader.SimpleArcLoader>
 </LinearLayout>

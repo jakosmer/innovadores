@@ -1,7 +1,9 @@
 package co.com.prototype.pokemap;
 
 import android.*;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -75,7 +77,8 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
         MarkerManager markerManager = new MarkerManager(mMap, getResources(), this.getActivity().getPackageName());
         final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
 
-        getPositions(markerManager,"");
+        TaskAnimation taskAnimation = new TaskAnimation(markerManager,"");
+        taskAnimation.execute();
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 3));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(12)
@@ -135,7 +138,7 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    private void getPositions(MarkerManager markerM, String team){
+    private void getPositions(MarkerManager markerM, String team, ProgressDialog dialog){
         IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
 
         HashMap<String, Object> params = new HashMap<>();
@@ -149,6 +152,8 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
             public void onResponse(Call<List<PokeStopPosition>> call, Response<List<PokeStopPosition>> response) {
                 List<PokeStopPosition> pos = response.body();
 
+                dialog.dismiss();
+
                 for (PokeStopPosition pokeStopPosition: pos){
                         markerM.addMarkerStop(pokeStopPosition);
                 }
@@ -159,5 +164,47 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
                 Log.e("PKMERROR", "Error llamando servicio", t);
             }
         });
+    }
+
+    class TaskAnimation extends AsyncTask<Void, String, Void> {
+
+        String color;
+        MarkerManager markerManager;
+        ProgressDialog progressDialog;
+
+
+        public  TaskAnimation(MarkerManager marker,String color){
+            this.color = color;
+            this.markerManager = marker;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                getPositions(markerManager,color, progressDialog);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(Void result) {
+            // execution of result of Long time consuming operation
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = ProgressDialog.show(getContext(),
+                    "PokeStops",
+                    "Loading information");
+        }
+
+
+        @Override
+        protected void onProgressUpdate(String... text) {
+        }
     }
 }

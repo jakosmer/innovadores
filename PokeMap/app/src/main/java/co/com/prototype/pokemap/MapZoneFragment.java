@@ -1,10 +1,10 @@
 package co.com.prototype.pokemap;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -17,26 +17,16 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.leo.simplearcloader.ArcConfiguration;
-import com.leo.simplearcloader.SimpleArcDialog;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import co.com.prototype.pokemap.Model.Beans.PokemonPosition;
 import co.com.prototype.pokemap.Model.Beans.Position;
 import co.com.prototype.pokemap.Model.Services.ApiFactoryClient;
 import co.com.prototype.pokemap.Model.Services.IApiContract;
-import co.com.prototype.pokemap.Security.PokeCredential;
-import co.com.prototype.pokemap.Security.PokeSecurity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,8 +34,6 @@ import retrofit2.Response;
 public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    SimpleArcDialog mDialog;
-
 
     @Nullable
     @Override
@@ -76,23 +64,16 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
             mMap.setMyLocationEnabled(true);
         }
 
-
-        SimpleArcDialog mDialog = new SimpleArcDialog(getContext());
-        mDialog.setConfiguration(new ArcConfiguration(this.getActivity()));
-        mDialog.show();
-
         GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
         LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
         MarkerManager markerManager = new MarkerManager(mMap, getResources(), this.getActivity().getPackageName());
 
         final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
 
+        TaskAnimation taskAnimation = new TaskAnimation(markerManager);
+        taskAnimation.execute();
 
-
-        getPositions(markerManager);
-
-
-
+//        getPositions(markerManager);
 //        for (int i = 1; i < 10; i++) {
 //            LatLng pos = generateRadomGpsLocation(loc);
 //            Position position = new Position(pos.latitude,pos.longitude);
@@ -124,29 +105,23 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
                 }
             });
 
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                if (myPosition[0] != null) {
-                    myPosition[0].remove();
-                }
-                myPosition[0] = markerManager.addMarkerGeneric(latLng);
+        mMap.setOnMapClickListener(latLng -> {
+            if (myPosition[0] != null) {
+                myPosition[0].remove();
             }
+            myPosition[0] = markerManager.addMarkerGeneric(latLng);
         });
 
-        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-            @Override
-            public boolean onMyLocationButtonClick() {
-                GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
-                LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
-                if (myPosition[0] != null) {
-                    myPosition[0].remove();
-                }
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
-                myPosition[0] = markerManager.addMarkerGeneric(loc);
-
-                return true;
+        mMap.setOnMyLocationButtonClickListener(() -> {
+            GpsLocation gpsLocation1 = new GpsLocation(getActivity().getApplicationContext());
+            LatLng loc1 = new LatLng(gpsLocation1.getLatitud(), gpsLocation1.getLongitud());
+            if (myPosition[0] != null) {
+                myPosition[0].remove();
             }
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc1, 15));
+            myPosition[0] = markerManager.addMarkerGeneric(loc1);
+
+            return true;
         });
     }
 
@@ -167,11 +142,10 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         return new LatLng((y + y0), (x + x0));
     }
 
-    private void getPositions(MarkerManager markerM){
+    private void getPositions(MarkerManager markerM, ProgressDialog dialog){
 
-        PokeSecurity pokeSecurity = PokeSecurity.getInstance(getActivity());
-        PokeCredential pokeCredential = pokeSecurity.getCredential();
-
+//        PokeSecurity pokeSecurity = PokeSecurity.getInstance(getActivity());
+//        PokeCredential pokeCredential = pokeSecurity.getCredential();
 
         IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
         HashMap<String, Object> params = new HashMap<>();
@@ -186,6 +160,8 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
             public void onResponse(Call<List<PokemonPosition>> call, Response<List<PokemonPosition>> response) {
                 List<PokemonPosition> pos = response.body();
 
+                dialog.dismiss();
+
                 for (PokemonPosition pokemonPosition: pos){
                     markerM.addMarkerPokemon(pokemonPosition);
                 }
@@ -196,5 +172,45 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
                 Log.e("PKMERROR", "Error llamando servicio", t);
             }
         });
+    }
+
+    class TaskAnimation extends AsyncTask<Void, String, Void> {
+
+        MarkerManager markerManager;
+        ProgressDialog progressDialog;
+
+
+        public  TaskAnimation(MarkerManager marker){
+            this.markerManager = marker;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                getPositions(markerManager, progressDialog);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(Void result) {
+            // execution of result of Long time consuming operation
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = ProgressDialog.show(getContext(),
+                    "Pokemons",
+                    "Loading information");
+        }
+
+
+        @Override
+        protected void onProgressUpdate(String... text) {
+        }
     }
 }
