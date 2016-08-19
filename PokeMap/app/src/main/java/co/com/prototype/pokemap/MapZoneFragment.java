@@ -203,9 +203,9 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
         @Override
         protected void onPreExecute() {
-            progressDialog = ProgressDialog.show(getContext(),
-                    "Pokemons",
-                    "Loading information");
+            progressDialog = new ProgressDialog(getContext());
+            progressDialog.show();
+            progressDialog.setContentView(R.layout.custom_progressdialog);
         }
 
 
