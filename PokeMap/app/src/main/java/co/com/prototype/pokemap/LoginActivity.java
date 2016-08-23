@@ -38,6 +38,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,21 +80,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mLoginFormView;
 
     //Google client for make singIn
-    GoogleApiClient mGoogleApiClient;
     public static final int RC_SIGN_IN = 1;
     private static final String LOG_GOOGLE_STATE = "PGO_GOOGLE_STATE";
+
+    private OnMapReadyCallback callback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        /*Intent intentFromWebView = getIntent();
-        if(intentFromWebView != null){
-            Object authCode = intentFromWebView.getExtras().get(WebViewContainerActivity.PARAM_AUTH_CODE);
-            if(authCode != null) {
-                PokeSecurity.getInstance(this).saveGoogleCredentials(authCode.toString());
-            }
-        }*/
 
         PokeSecurity.getInstance(this).startEntryPoint();
 
@@ -109,6 +107,22 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             });
         }
 
+
+        setCallback();
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(callback);
+    }
+
+    private void setCallback(){
+        callback = googleMap -> {
+
+            GpsLocation gpsLocation = new GpsLocation(getApplicationContext());
+            LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 12));
+            googleMap.getUiSettings().setAllGesturesEnabled(false);
+
+        };
     }
 
     private void populateAutoComplete() {

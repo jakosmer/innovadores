@@ -27,4 +27,5 @@
     <string name="title_activity_web_view_container">Container</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="pokeball_image_description">pokeball image</string>
 </resources>
