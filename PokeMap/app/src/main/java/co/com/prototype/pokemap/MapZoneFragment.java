@@ -1,10 +1,10 @@
 package co.com.prototype.pokemap;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -17,17 +17,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import co.com.prototype.pokemap.Model.Beans.PokemonPosition;
 import co.com.prototype.pokemap.Model.Beans.Position;
@@ -76,8 +70,10 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
         final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
 
-        getPositions(markerManager);
+        TaskAnimation taskAnimation = new TaskAnimation(markerManager);
+        taskAnimation.execute();
 
+//        getPositions(markerManager);
 //        for (int i = 1; i < 10; i++) {
 //            LatLng pos = generateRadomGpsLocation(loc);
 //            Position position = new Position(pos.latitude,pos.longitude);
@@ -109,29 +105,23 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
                 }
             });
 
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                if (myPosition[0] != null) {
-                    myPosition[0].remove();
-                }
-                myPosition[0] = markerManager.addMarkerGeneric(latLng);
+        mMap.setOnMapClickListener(latLng -> {
+            if (myPosition[0] != null) {
+                myPosition[0].remove();
             }
+            myPosition[0] = markerManager.addMarkerGeneric(latLng);
         });
 
-        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-            @Override
-            public boolean onMyLocationButtonClick() {
-                GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
-                LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
-                if (myPosition[0] != null) {
-                    myPosition[0].remove();
-                }
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
-                myPosition[0] = markerManager.addMarkerGeneric(loc);
-
-                return true;
+        mMap.setOnMyLocationButtonClickListener(() -> {
+            GpsLocation gpsLocation1 = new GpsLocation(getActivity().getApplicationContext());
+            LatLng loc1 = new LatLng(gpsLocation1.getLatitud(), gpsLocation1.getLongitud());
+            if (myPosition[0] != null) {
+                myPosition[0].remove();
             }
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc1, 15));
+            myPosition[0] = markerManager.addMarkerGeneric(loc1);
+
+            return true;
         });
     }
 
@@ -152,19 +142,25 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         return new LatLng((y + y0), (x + x0));
     }
 
-    private void getPositions(MarkerManager markerM){
-        IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
+    private void getPositions(MarkerManager markerM, ProgressDialog dialog){
 
+//        PokeSecurity pokeSecurity = PokeSecurity.getInstance(getActivity());
+//        PokeCredential pokeCredential = pokeSecurity.getCredential();
+
+        IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
         HashMap<String, Object> params = new HashMap<>();
-        params.put("token", "");
+        params.put("token", "1/tonF2rg3bavTh84gxnN9OC3_xLVr5YK5ZO1xWwNeGmE");
+//        params.put("token", pokeCredential.getToken());
         params.put("width", 9);
-        params.put("position", new Position(6.254010, -75.578931));
+        params.put("position", new Position(6.2538345, -75.57843804));
         Call<List<PokemonPosition>> caller = endPoints.getPokemonPositions(params);
 
         caller.enqueue(new Callback<List<PokemonPosition>>() {
             @Override
             public void onResponse(Call<List<PokemonPosition>> call, Response<List<PokemonPosition>> response) {
                 List<PokemonPosition> pos = response.body();
+
+                dialog.dismiss();
 
                 for (PokemonPosition pokemonPosition: pos){
                     markerM.addMarkerPokemon(pokemonPosition);
@@ -176,5 +172,45 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
                 Log.e("PKMERROR", "Error llamando servicio", t);
             }
         });
+    }
+
+    class TaskAnimation extends AsyncTask<Void, String, Void> {
+
+        MarkerManager markerManager;
+        ProgressDialog progressDialog;
+
+
+        public  TaskAnimation(MarkerManager marker){
+            this.markerManager = marker;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                getPositions(markerManager, progressDialog);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(Void result) {
+            // execution of result of Long time consuming operation
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(getContext());
+            progressDialog.show();
+            progressDialog.setContentView(R.layout.custom_progressdialog);
+        }
+
+
+        @Override
+        protected void onProgressUpdate(String... text) {
+        }
     }
 }

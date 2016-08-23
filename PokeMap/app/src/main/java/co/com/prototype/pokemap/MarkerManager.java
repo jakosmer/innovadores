@@ -5,13 +5,19 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.SystemClock;
 import android.util.Log;
+import android.util.TimeUtils;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import co.com.prototype.pokemap.Model.Beans.GymPosition;
 import co.com.prototype.pokemap.Model.Beans.PokeStopPosition;
@@ -44,8 +50,11 @@ public class MarkerManager {
 
     public void addMarkerPokemon(PokemonPosition pokemonPosition){
 
-        String idPoke = String.valueOf(pokemonPosition.getId());
-        String icoName = "p_00"+idPoke;
+
+        String idPoke = "00"+String.valueOf(pokemonPosition.getId());
+        idPoke = idPoke.substring(idPoke.length()-3,idPoke.length());
+
+        String icoName = "p_"+idPoke;
 
         int id = resources.getIdentifier(icoName, "drawable", this.paquete);
 
@@ -61,9 +70,15 @@ public class MarkerManager {
         MarkerOptions options = new MarkerOptions().position(pokemonPosition.getPosition().convertToLatLng()).title(pokemonPosition.getName()).icon(BitmapDescriptorFactory.fromResource(id));
         Marker marker =  mapa.addMarker(options);
 
-        MarkerCounter counter = new MarkerCounter(marker, this.resources, bmp, canvas);
-        counter.startCounter(Long.parseLong(pokemonPosition.getTimeToHide()));
-    }
+        MarkerCounter counter = new MarkerCounter(marker, this.resources, bmp, canvas, id);
+
+        long timeToHide = Long.parseLong(pokemonPosition.getTimeToHide());
+        Calendar cal = Calendar.getInstance();
+        long currentTime = cal.getTimeInMillis();
+        long timeDifSec = (timeToHide-currentTime);
+
+        counter.startCounter(timeDifSec);
+}
 
     public void addMarkerGym(GymPosition gymPosition, String team){
         try {
@@ -83,7 +98,7 @@ public class MarkerManager {
 //            team = team.toLowerCase();
 //            String name = "battle_arena_"+team+"_80";
 //            int id = resources.getIdentifier(name, "drawable", this.paquete);
-            mapa.addMarker(new MarkerOptions().position(pokeStopPosition.getPosition().convertToLatLng()).icon(BitmapDescriptorFactory.fromResource(R.drawable.pokestop)));
+            mapa.addMarker(new MarkerOptions().position(pokeStopPosition.getPosition().convertToLatLng()).icon(BitmapDescriptorFactory.fromResource(R.drawable.pokestop30x50)));
 
         }catch (Exception e){
             Log.e("addMarkerGym",e.getMessage());
