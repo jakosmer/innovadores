@@ -51,6 +51,10 @@ public class PokeBallView extends LinearLayout {
 
             @Override
             public void onAnimationEnd(Animator animation) {
+                if(animator == null){
+                    return;
+                }
+
                 count++;
                 long startDelay = 0;
 

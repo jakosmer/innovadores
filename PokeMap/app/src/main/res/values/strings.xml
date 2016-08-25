@@ -12,7 +12,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-    <string name="title_activity_login">Sing In</string>
+    <string name="title_activity_login">PokeMap</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -30,4 +30,5 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="pokeball_image_description">pokeball image</string>
+    <string name="login_warning_for_google_account">Te recomendamos usar una cuenta google alternativa!</string>
 </resources>
