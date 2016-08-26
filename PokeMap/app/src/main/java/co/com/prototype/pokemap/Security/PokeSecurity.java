@@ -74,8 +74,7 @@ public class PokeSecurity {
     public PokeCredential getCredential(){
 
             return new PokeCredential(preferences.getString(PokeCredential.TOKEN_ATTR, null),
-                                          preferences.getString(PokeCredential.EMAIL_ATTR, null),
-                                          preferences.getString(PokeCredential.USERNAME_ATTR, null));
+                                          preferences.getString(PokeCredential.AUTH_ATTR, null));
     }
 
     /**
@@ -98,8 +97,7 @@ public class PokeSecurity {
 
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString(PokeCredential.TOKEN_ATTR, authToken);
-                editor.putString(PokeCredential.EMAIL_ATTR, acct.getEmail());
-                editor.putString(PokeCredential.USERNAME_ATTR, acct.getDisplayName());
+                editor.putString(PokeCredential.AUTH_ATTR, authToken);
                 editor.apply();
 
                 return true;
@@ -117,16 +115,19 @@ public class PokeSecurity {
     /**
      * Almacena una credencial google en las sharedPreferences del usuario
      * @param authCode codigo de authorización del usuario
+     * @param refreshToken token del usuario
      * @return True si se logra almacenar la credencial, False en otro caso
      */
-    public boolean saveGoogleCredentials(String authCode){
+    public boolean saveGoogleCredentials(String authCode, String refreshToken){
 
             try {
 
                 Log.i(LOG_GOOGLE_STATE, "AuthToken: " + (authCode == null ? "" : authCode));
+                Log.i(LOG_GOOGLE_STATE, "RefreshToken: " + (refreshToken == null ? "" : refreshToken));
 
                 SharedPreferences.Editor editor = preferences.edit();
-                editor.putString(PokeCredential.TOKEN_ATTR, authCode);
+                editor.putString(PokeCredential.AUTH_ATTR, authCode);
+                editor.putString(PokeCredential.TOKEN_ATTR, refreshToken);
                 editor.apply();
 
                 return true;
@@ -193,8 +194,7 @@ public class PokeSecurity {
 
         SharedPreferences.Editor editor = preferences.edit();
         editor.remove(PokeCredential.TOKEN_ATTR);
-        editor.remove(PokeCredential.EMAIL_ATTR);
-        editor.remove(PokeCredential.USERNAME_ATTR);
+        editor.remove(PokeCredential.AUTH_ATTR);
         editor.apply();
 
         preferences = null;
