@@ -9,17 +9,14 @@ package co.com.prototype.pokemap.Security;
 public class PokeCredential {
 
     public static String TOKEN_ATTR = "co.com.prototype.pokemap.Security.PokeCredential.Token";
-    public static String EMAIL_ATTR = "co.com.prototype.pokemap.Security.PokeCredential.Email";
-    public static String USERNAME_ATTR = "co.com.prototype.pokemap.Security.PokeCredential.UserName";
+    public static String AUTH_ATTR = "co.com.prototype.pokemap.Security.PokeCredential.Auth";
 
     private String token;
-    private String email;
-    private String username;
+    private String auth;
 
-    public PokeCredential(String token, String email, String username) {
+    public PokeCredential(String token, String auth) {
         this.token = token;
-        this.email = email;
-        this.username = username;
+        this.auth = auth;
     }
 
     public String getToken() {
@@ -30,19 +27,12 @@ public class PokeCredential {
         this.token = token;
     }
 
-    public String getEmail() {
-        return email;
+    public String getAuth() {
+        return auth;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setAuth(String email) {
+        this.auth = email;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
 }

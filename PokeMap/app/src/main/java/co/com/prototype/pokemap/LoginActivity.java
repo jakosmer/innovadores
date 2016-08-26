@@ -45,9 +45,16 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import co.com.prototype.pokemap.Model.Beans.PokemonPosition;
+import co.com.prototype.pokemap.Model.Services.ApiFactoryClient;
+import co.com.prototype.pokemap.Model.Services.IApiContract;
 import co.com.prototype.pokemap.Security.PokeSecurity;
+import co.com.prototype.pokemap.Utils.ApiEndPointsBodyGenerator;
+import retrofit2.*;
+import retrofit2.Callback;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -82,6 +89,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     //Google client for make singIn
     public static final int RC_SIGN_IN = 1;
     private static final String LOG_GOOGLE_STATE = "PGO_GOOGLE_STATE";
+    private static final String LOGIN_STATE = "PGO_LOGIN_STATE";
 
     private OnMapReadyCallback callback;
 
@@ -324,11 +332,30 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         if(requestCode == RC_SIGN_IN){
             //GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            Object authCode = data.getExtras().get(WebViewContainerActivity.PARAM_AUTH_CODE);
-            PokeSecurity security = PokeSecurity.getInstance(this);
-            if(authCode != null && security.saveGoogleCredentials(authCode.toString())){
-                security.startEntryPoint();
-            }
+            String authCode = String.valueOf(data.getExtras().get(WebViewContainerActivity.PARAM_AUTH_CODE));
+
+            IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
+            HashMap<String, String> params = ApiEndPointsBodyGenerator.getBodyForRefresh(authCode);
+            Call<String> caller = endPoints.getToken(params);
+            caller.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+
+                    PokeSecurity security = PokeSecurity.getInstance(LoginActivity.this);
+                    if(authCode != null && security.saveGoogleCredentials(authCode, response.body())){
+                        security.startEntryPoint();
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    Log.e(LOGIN_STATE, "Error retreving token from google " + t.getMessage());
+                }
+            });
+
+
+
         }
     }
 

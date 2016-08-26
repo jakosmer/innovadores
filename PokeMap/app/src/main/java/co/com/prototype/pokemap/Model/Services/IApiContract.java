@@ -29,4 +29,7 @@ public interface IApiContract {
     @Headers({"Accept: application/json" })
     Call<List<PokeStopPosition>> getPokeStopPositions(@Body HashMap<String, Object> body);
 
+    @POST("getRefresh")
+    Call<String> getToken(@Body HashMap<String, String> body);
+
 }
