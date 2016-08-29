@@ -108,7 +108,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         //pruebas
 
-        IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
+        /*IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
         HashMap<String, String> params = ApiEndPointsBodyGenerator.getBodyForRefresh("blablablablab");
 
         Call<String> caller = endPoints.getHeaders(params);
@@ -123,7 +123,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             public void onFailure(Call<String> call, Throwable t) {
                 Log.e(LOGIN_STATE, "Error retreving token from google " + t.getMessage());
             }
-        });
+        });*/
 
         //fin pruebas
 
