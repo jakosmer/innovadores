@@ -32,4 +32,7 @@ public interface IApiContract {
     @POST("getRefresh")
     Call<String> getToken(@Body HashMap<String, String> body);
 
+    @POST("getHeaders")
+    Call<String> getHeaders(@Body HashMap<String, String> body);
+
 }

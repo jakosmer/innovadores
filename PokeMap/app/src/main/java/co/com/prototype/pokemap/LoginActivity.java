@@ -2,6 +2,7 @@ package co.com.prototype.pokemap;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -37,6 +38,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -49,6 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import co.com.prototype.pokemap.Model.Beans.PokemonPosition;
+import co.com.prototype.pokemap.Model.Beans.Position;
 import co.com.prototype.pokemap.Model.Services.ApiFactoryClient;
 import co.com.prototype.pokemap.Model.Services.IApiContract;
 import co.com.prototype.pokemap.Security.PokeSecurity;
@@ -101,6 +104,28 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         setContentView(R.layout.activity_login);
         // Set up the login form.
+
+
+        //pruebas
+
+        IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
+        HashMap<String, String> params = ApiEndPointsBodyGenerator.getBodyForRefresh("blablablablab");
+
+        Call<String> caller = endPoints.getHeaders(params);
+        caller.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+
+                Log.i("helloworld", response.body());
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.e(LOGIN_STATE, "Error retreving token from google " + t.getMessage());
+            }
+        });
+
+        //fin pruebas
 
         mProgressView = findViewById(R.id.login_progress);
 
