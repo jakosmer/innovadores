@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -15,7 +16,7 @@ import android.widget.LinearLayout;
  */
 public class PokeBallView extends LinearLayout {
     private static ImageView imageButton;
-    private static AnimatorSet animator;
+    private AnimatorSet animator;
 
     public PokeBallView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -77,10 +78,20 @@ public class PokeBallView extends LinearLayout {
             }
         });
 
-        animator.start();
-
     }
 
+
+    @Override
+    protected void onVisibilityChanged(View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+
+        if(visibility == VISIBLE){
+            animator.start();
+        }else{
+            animator.end();
+        }
+
+    }
 
     @Override
     protected void onDetachedFromWindow() {
