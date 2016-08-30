@@ -30,9 +30,9 @@ public interface IApiContract {
     Call<List<PokeStopPosition>> getPokeStopPositions(@Body HashMap<String, Object> body);
 
     @POST("getRefresh")
-    Call<String> getToken(@Body HashMap<String, String> body);
+    Call<String> getToken(@Body HashMap<String, Object> body);
 
     @POST("getHeaders")
-    Call<String> getHeaders(@Body HashMap<String, String> body);
+    Call<String> getHeaders(@Body HashMap<String, Object> body);
 
 }

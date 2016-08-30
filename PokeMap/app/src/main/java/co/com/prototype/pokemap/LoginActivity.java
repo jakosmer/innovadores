@@ -109,7 +109,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         //pruebas
 
         /*IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
-        HashMap<String, String> params = ApiEndPointsBodyGenerator.getBodyForRefresh("blablablablab");
+
+        HashMap<String, Object> params = ApiEndPointsBodyGenerator.builder()
+                                                                  .addAuthCode("dasdadas")
+                                                                  .build();
 
         Call<String> caller = endPoints.getHeaders(params);
         caller.enqueue(new Callback<String>() {
@@ -360,7 +363,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             String authCode = String.valueOf(data.getExtras().get(WebViewContainerActivity.PARAM_AUTH_CODE));
 
             IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
-            HashMap<String, String> params = ApiEndPointsBodyGenerator.getBodyForRefresh(authCode);
+            HashMap<String, Object> params = ApiEndPointsBodyGenerator.builder()
+                                                                      .addAuthCode(authCode)
+                                                                      .build();
+
             Call<String> caller = endPoints.getToken(params);
             caller.enqueue(new Callback<String>() {
                 @Override
