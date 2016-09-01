@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import co.com.prototype.pokemap.Model.Beans.Position;
+
 /**
  * Created by carlviar on 2016/08/26.
  */
@@ -35,6 +37,16 @@ public class ApiEndPointsBodyGenerator{
     public ApiEndPointsBodyGenerator addAuthCode(String authCode){
 
         map.put(KEY_AUTH_CODE, authCode);
+
+        return this;
+    }
+
+    public ApiEndPointsBodyGenerator getService (String token, Integer width, Position position){
+
+        map.put("token", token);
+        map.put("width", width);
+        map.put("position", position);
+
 
         return this;
     }

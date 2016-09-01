@@ -3,6 +3,7 @@ package co.com.prototype.pokemap;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -123,6 +124,8 @@ public class MainActivity extends AppCompatActivity
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             assert drawer != null;
             drawer.closeDrawer(GravityCompat.START);
+
+            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragment).commit();
         }else{
             Toast toast = Toast.makeText(MainActivity.this, "Under construction",
