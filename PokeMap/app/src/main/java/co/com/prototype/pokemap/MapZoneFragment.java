@@ -3,20 +3,25 @@ package co.com.prototype.pokemap;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
@@ -27,6 +32,8 @@ import co.com.prototype.pokemap.Model.Beans.PokemonPosition;
 import co.com.prototype.pokemap.Model.Beans.Position;
 import co.com.prototype.pokemap.Model.Services.ApiFactoryClient;
 import co.com.prototype.pokemap.Model.Services.IApiContract;
+import co.com.prototype.pokemap.Security.PokeCredential;
+import co.com.prototype.pokemap.Security.PokeSecurity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -67,43 +74,33 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
         LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
         MarkerManager markerManager = new MarkerManager(mMap, getResources(), this.getActivity().getPackageName());
-
         final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
 
-        TaskAnimation taskAnimation = new TaskAnimation(markerManager);
-        taskAnimation.execute();
+        if (gpsLocation.validarGPS()){
+            TaskAnimation taskAnimation = new TaskAnimation(markerManager);
+            taskAnimation.execute();
 
-//        getPositions(markerManager);
-//        for (int i = 1; i < 10; i++) {
-//            LatLng pos = generateRadomGpsLocation(loc);
-//            Position position = new Position(pos.latitude,pos.longitude);
-//            Random random = new Random();
-//            PokemonPosition pokemonPosition = new PokemonPosition
-//                    (i,"p_00"+i, String.valueOf(SystemClock.currentThreadTimeMillis() +
-//                            ((random.nextInt(600 - 100) + 100) * 1000)),position);
-//            markerManager.addMarkerPokemon(pokemonPosition);
-//        }
+            CircleOptions circleOptions = new CircleOptions()
+                    .center(new LatLng(6.26718156, -75.58027267))
+                    .radius(300)
+                    .fillColor(Color.argb(150, 84, 162, 208))
+                    .strokeWidth(1).strokeColor(Color.argb(150, 84, 162, 208));
+            Circle circle = mMap.addCircle(circleOptions);
 
-        /*CircleOptions circleOptions = new CircleOptions()
-                .center(new LatLng(6.26718156, -75.58027267))
-                .radius(300)
-                .fillColor(Color.argb(150, 84, 162, 208))
-                .strokeWidth(1).strokeColor(Color.argb(150, 84, 162, 208));
-        Circle circle = mMap.addCircle(circleOptions);*/
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 3));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(12)
+                    , 1000, new GoogleMap.CancelableCallback() {
+                        @Override
+                        public void onFinish() {
+                            mMap.animateCamera(CameraUpdateFactory.zoomTo(12), 2000, null);
+                        }
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 3));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(12)
-            , 1000, new GoogleMap.CancelableCallback() {
-                @Override
-                public void onFinish() {
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(12), 2000, null);
-                }
+                        @Override
+                        public void onCancel() {
 
-                @Override
-                public void onCancel() {
-
-                }
-            });
+                        }
+                    });
+        }
 
         mMap.setOnMapClickListener(latLng -> {
             if (myPosition[0] != null) {
@@ -144,13 +141,13 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
     private void getPositions(MarkerManager markerM, ProgressDialog dialog){
 
-//        PokeSecurity pokeSecurity = PokeSecurity.getInstance(getActivity());
-//        PokeCredential pokeCredential = pokeSecurity.getCredential();
+        PokeSecurity pokeSecurity = PokeSecurity.getInstance(getActivity());
+        PokeCredential pokeCredential = pokeSecurity.getCredential();
 
         IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
         HashMap<String, Object> params = new HashMap<>();
-        params.put("token", "1/tonF2rg3bavTh84gxnN9OC3_xLVr5YK5ZO1xWwNeGmE");
-//        params.put("token", pokeCredential.getToken());
+//        params.put("token", "1/tonF2rg3bavTh84gxnN9OC3_xLVr5YK5ZO1xWwNeGmE");
+        params.put("token", pokeCredential.getToken());
         params.put("width", 9);
         params.put("position", new Position(6.2538345, -75.57843804));
         Call<List<PokemonPosition>> caller = endPoints.getPokemonPositions(params);
@@ -170,6 +167,10 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onFailure(Call<List<PokemonPosition>> call, Throwable t) {
                 Log.e("PKMERROR", "Error llamando servicio", t);
+                dialog.dismiss();
+                Toast toast = Toast.makeText(getContext(), "Error llamando servicio", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
             }
         });
     }

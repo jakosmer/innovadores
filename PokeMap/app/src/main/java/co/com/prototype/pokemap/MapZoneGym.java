@@ -6,19 +6,18 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
+
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdate;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -30,10 +29,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import co.com.prototype.pokemap.Model.Beans.GymPosition;
-import co.com.prototype.pokemap.Model.Beans.PokemonPosition;
 import co.com.prototype.pokemap.Model.Beans.Position;
 import co.com.prototype.pokemap.Model.Services.ApiFactoryClient;
 import co.com.prototype.pokemap.Model.Services.IApiContract;
+import co.com.prototype.pokemap.Security.PokeCredential;
+import co.com.prototype.pokemap.Security.PokeSecurity;
+import co.com.prototype.pokemap.Utils.ApiEndPointsBodyGenerator;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,6 +45,7 @@ import retrofit2.Response;
 public class MapZoneGym extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private MarkerManager markerManager;
 
     @Nullable
     @Override
@@ -53,6 +55,19 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
+        FloatingActionButton actionR = (FloatingActionButton) view.findViewById(R.id.action_r);
+        actionR.setOnClickListener(this::floatingClick);
+
+        FloatingActionButton actionB = (FloatingActionButton) view.findViewById(R.id.action_b);
+        actionB.setOnClickListener(this::floatingClick);
+
+        FloatingActionButton actionY = (FloatingActionButton) view.findViewById(R.id.action_y);
+        actionY.setOnClickListener(this::floatingClick);
+
+        FloatingActionButton actionA = (FloatingActionButton) view.findViewById(R.id.action_a);
+        actionA.setOnClickListener(this::floatingClick);
 
         return view;
     }
@@ -68,128 +83,92 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        if (ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
+
+        try {
+            mMap = googleMap;
+            if (ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                mMap.setMyLocationEnabled(true);
+            }
+
+            GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
+            LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
+            markerManager = new MarkerManager(mMap, getResources(), this.getActivity().getPackageName());
+            final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
+
+            if (gpsLocation.validarGPS()){
+                TaskAnimation taskAnimation = new TaskAnimation(markerManager,"");
+                taskAnimation.execute();
+
+
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 3));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(12)
+                        , 1000, new GoogleMap.CancelableCallback() {
+                            @Override
+                            public void onFinish() {
+                                mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
+                            }
+
+                            @Override
+                            public void onCancel() {
+
+                            }
+                        });
+
+            }
+
+            mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng latLng) {
+                    if (myPosition[0] != null) {
+                        myPosition[0].remove();
+                    }
+                    myPosition[0] = markerManager.addMarkerGeneric(latLng);
+                }
+            });
+
+            mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+                @Override
+                public boolean onMyLocationButtonClick() {
+                    GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
+                    LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
+                    if (myPosition[0] != null) {
+                        myPosition[0].remove();
+                    }
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
+                    myPosition[0] = markerManager.addMarkerGeneric(loc);
+
+                    return true;
+                }
+            });
+        }catch (Exception e){
         }
 
-        FloatingActionButton selectGym = (FloatingActionButton)this.getActivity().findViewById(R.id.gym);
-        GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
-        LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
-        MarkerManager markerManager = new MarkerManager(mMap, getResources(), this.getActivity().getPackageName());
-        final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
-
-        TaskAnimation taskAnimation = new TaskAnimation(markerManager,"");
-        taskAnimation.execute();
-
-//        getPositions(markerManager,"");
-
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 3));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(12)
-            , 1000, new GoogleMap.CancelableCallback() {
-            @Override
-            public void onFinish() {
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
-            }
-
-            @Override
-            public void onCancel() {
-
-            }
-        });
-
-        /*markerManager.addMarkerGym(new LatLng(6.26718156, -75.58027267), "RED");
-        markerManager.addMarkerGym(new LatLng(6.25133355, -75.56647539), "RED");
-        markerManager.addMarkerGym(new LatLng(6.25730594, -75.55932999), "BLUE");
-        markerManager.addMarkerGym(new LatLng(6.25171749, -75.56819201), "YELLOW");*/
-
-
-
-        selectGym.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Toast toast = Toast.makeText(MapZoneGym.this.getContext(), "PokemonGO not found",
-//                        Toast.LENGTH_LONG);
-//                toast.setGravity(Gravity.CENTER,0,0);
-//                toast.show();
-
-                PopupMenu popup = new PopupMenu(MapZoneGym.this.getContext(), selectGym);
-                //Inflating the Popup using xml file
-                popup.getMenuInflater()
-                        .inflate(R.menu.popup_menu_gyms, popup.getMenu());
-
-                //registering popup with OnMenuItemClickListener
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
-                        mMap.clear();
-                        myPosition[0] = markerManager.addMarkerGeneric(loc);
-
-                        if (item.getTitle().equals("BLUE teams")){
-                            TaskAnimation taskAnimation = new TaskAnimation(markerManager,"BLUE");
-                            taskAnimation.execute();
-                            //getPositions(markerManager,"BLUE");
-                        }
-                        if (item.getTitle().equals("RED teams")){
-                            TaskAnimation taskAnimation = new TaskAnimation(markerManager,"RED");
-                            taskAnimation.execute();
-//                            getPositions(markerManager,"RED");
-                        }
-                        if (item.getTitle().equals("YELLOW teams")){
-                            TaskAnimation taskAnimation = new TaskAnimation(markerManager,"YELLOW");
-                            taskAnimation.execute();
-//                            getPositions(markerManager,"YELLOW");
-                        }
-                        if (item.getTitle().equals("ALL teams")){
-                            TaskAnimation taskAnimation = new TaskAnimation(markerManager,"");
-                            taskAnimation.execute();
-//                            getPositions(markerManager,"");
-                        }
-
-                        return true;
-                    }
-                });
-
-                popup.show(); //showing popup menu
-            }
-        });
-
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                if (myPosition[0] != null) {
-                    myPosition[0].remove();
-                }
-                myPosition[0] = markerManager.addMarkerGeneric(latLng);
-            }
-        });
-
-        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-            @Override
-            public boolean onMyLocationButtonClick() {
-                GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
-                LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
-                if (myPosition[0] != null) {
-                    myPosition[0].remove();
-                }
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
-                myPosition[0] = markerManager.addMarkerGeneric(loc);
-
-                return true;
-            }
-        });
     }
 
     private void getPositions(MarkerManager markerM, String team, ProgressDialog dialog){
+        PokeSecurity pokeSecurity = PokeSecurity.getInstance(getActivity());
+        PokeCredential pokeCredential = pokeSecurity.getCredential();
+
+//        IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
+//
+//        HashMap<String, Object> params = new HashMap<>();
+////        params.put("token", "1/tonF2rg3bavTh84gxnN9OC3_xLVr5YK5ZO1xWwNeGmE");
+//        params.put("token", pokeCredential.getToken());
+//        params.put("width", 9);
+//        params.put("position", new Position(6.2538345, -75.57843804));
+
+
+
         IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
 
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("token", "1/tonF2rg3bavTh84gxnN9OC3_xLVr5YK5ZO1xWwNeGmE");
-        params.put("width", 9);
-        params.put("position", new Position(6.2538345, -75.57843804));
+        HashMap<String, Object> params = ApiEndPointsBodyGenerator.builder()
+                .getService(pokeCredential.getToken(),9,new Position(6.2538345, -75.57843804))
+                .build();
+
         Call<List<GymPosition>> caller = endPoints.getGymPositions(params);
+//        Call<List<GymPosition>> caller = endPoints.getGymPositions(params);
 
         caller.enqueue(new Callback<List<GymPosition>>() {
             @Override
@@ -216,7 +195,11 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
 
             @Override
             public void onFailure(Call<List<GymPosition>> call, Throwable t) {
-                Log.e("PKMERROR", "Error llamando servicio", t);
+                Log.e("PKMERROR", "ERROR DE CONEXIÓN AL SERVICIO", t);
+                dialog.dismiss();
+                Toast toast = Toast.makeText(getContext(), "ERROR DE CONEXIÓN AL SERVICIO", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
             }
         });
     }
@@ -264,4 +247,25 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
         }
     }
 
-}
+    public void floatingClick(View view){
+        String gymName = "";
+
+        switch (view.getId()) {
+            case R.id.action_r:
+                gymName = "RED";
+                break;
+            case R.id.action_b:
+                gymName = "BLUE";
+                break;
+            case R.id.action_y:
+                gymName = "YELLOW";
+                break;
+            case R.id.action_a:
+                gymName = "";
+                break;
+        }
+        mMap.clear();
+        TaskAnimation taskAnimation = new TaskAnimation(markerManager,gymName);
+        taskAnimation.execute();
+        }
+    }

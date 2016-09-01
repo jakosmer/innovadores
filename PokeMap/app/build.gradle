@@ -47,6 +47,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-auth:9.0.0'
     compile 'com.android.support:design:23.4.0'
     compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'com.getbase:floatingactionbutton:1.10.1'
     // https://github.com/codepath/android_guides/wiki/Communicating-with-an-Event-Bus
     //compile 'frankiesardo:icepick:3.2.0' //https://github.com/frankiesardo/icepick
     //provided 'frankiesardo:icepick-processor:3.2.0'

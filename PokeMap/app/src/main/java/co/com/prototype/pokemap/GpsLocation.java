@@ -10,7 +10,10 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.view.Gravity;
+import android.widget.Toast;
 
 
 import java.util.List;
@@ -24,7 +27,7 @@ public class GpsLocation extends Service implements LocationListener {
     private double longitud;
     Location location;
     LocationManager locationManager;
-    boolean gpsActivo;
+    boolean gpsActivo= false;
 
     private static final long TIME_LOCATION = 0; //* 60; // 1 minuto
     private static final long DISTANCE = 0; // 1 metro
@@ -49,12 +52,19 @@ public class GpsLocation extends Service implements LocationListener {
         if(gpsActivo){
             if (ContextCompat.checkSelfPermission(this.context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                     || ContextCompat.checkSelfPermission(this.context, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
                 locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 1000, 1, this);
 
                 location = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
 
-                latitud = location.getLatitude();
-                longitud = location.getLongitude();
+                if(location==null){
+                    Toast toast = Toast.makeText(context, "GPS INACTIVO", Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER,0,0);
+                    toast.show();
+                }else{
+                    latitud = location.getLatitude();
+                    longitud = location.getLongitude();
+                }
             }
         }
     }
@@ -67,16 +77,23 @@ public class GpsLocation extends Service implements LocationListener {
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-
+        Toast toast = Toast.makeText(context, "GPS ACTIVO, vuelva a consultar", Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER,0,0);
+        toast.show();
     }
 
     @Override
     public void onProviderEnabled(String provider) {
-
+        Toast toast = Toast.makeText(context, "GPS ACTIVO, vuelva a consultar", Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER,0,0);
+        toast.show();
     }
 
     @Override
     public void onProviderDisabled(String provider) {
+        Toast toast = Toast.makeText(context, "GPS INACTIVO", Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER,0,0);
+        toast.show();
     }
 
     @Nullable
@@ -91,5 +108,15 @@ public class GpsLocation extends Service implements LocationListener {
 
     public double getLongitud() {
         return longitud;
+    }
+
+    public boolean validarGPS(){
+        boolean gpsActivo = false;
+
+        if (location != null)
+            gpsActivo= true;
+        else
+            gpsActivo=false;
+        return gpsActivo;
     }
 }

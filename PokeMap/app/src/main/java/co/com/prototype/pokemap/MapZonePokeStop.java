@@ -31,6 +31,9 @@ import co.com.prototype.pokemap.Model.Beans.PokeStopPosition;
 import co.com.prototype.pokemap.Model.Beans.Position;
 import co.com.prototype.pokemap.Model.Services.ApiFactoryClient;
 import co.com.prototype.pokemap.Model.Services.IApiContract;
+import co.com.prototype.pokemap.Security.PokeCredential;
+import co.com.prototype.pokemap.Security.PokeSecurity;
+import co.com.prototype.pokemap.Utils.ApiEndPointsBodyGenerator;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -77,40 +80,25 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
         MarkerManager markerManager = new MarkerManager(mMap, getResources(), this.getActivity().getPackageName());
         final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
 
-        TaskAnimation taskAnimation = new TaskAnimation(markerManager,"");
-        taskAnimation.execute();
+        if (gpsLocation.validarGPS()){
+            TaskAnimation taskAnimation = new TaskAnimation(markerManager,"");
+            taskAnimation.execute();
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 3));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(12)
-                , 1000, new GoogleMap.CancelableCallback() {
-                    @Override
-                    public void onFinish() {
-                        mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
-                    }
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 3));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(12)
+                    , 1000, new GoogleMap.CancelableCallback() {
+                        @Override
+                        public void onFinish() {
+                            mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
+                        }
 
-                    @Override
-                    public void onCancel() {
+                        @Override
+                        public void onCancel() {
 
-                    }
-                });
-
-        /*markerManager.addMarkerGym(new LatLng(6.26718156, -75.58027267), "RED");
-        markerManager.addMarkerGym(new LatLng(6.25133355, -75.56647539), "RED");
-        markerManager.addMarkerGym(new LatLng(6.25730594, -75.55932999), "BLUE");
-        markerManager.addMarkerGym(new LatLng(6.25171749, -75.56819201), "YELLOW");*/
-
-
-
-//        selectGym.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast toast = Toast.makeText(MapZonePokeStop.this.getContext(), "UNDER CONSTRUCTION",
-//                        Toast.LENGTH_LONG);
-//                toast.setGravity(Gravity.CENTER,0,0);
-//                toast.show();
-//            }
-//        });
+                        }
+                    });
+        }
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -139,12 +127,23 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
     }
 
     private void getPositions(MarkerManager markerM, String team, ProgressDialog dialog){
+        PokeSecurity pokeSecurity = PokeSecurity.getInstance(getActivity());
+        PokeCredential pokeCredential = pokeSecurity.getCredential();
+//        IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
+//
+//        HashMap<String, Object> params = new HashMap<>();
+////        params.put("token", "1/tonF2rg3bavTh84gxnN9OC3_xLVr5YK5ZO1xWwNeGmE");
+//        params.put("token", pokeCredential.getToken());
+//        params.put("width", 9);
+//        params.put("position", new Position(6.2538345, -75.57843804));
+//        Call<List<PokeStopPosition>> caller = endPoints.getPokeStopPositions(params);
+
         IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
 
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("token", "1/tonF2rg3bavTh84gxnN9OC3_xLVr5YK5ZO1xWwNeGmE");
-        params.put("width", 9);
-        params.put("position", new Position(6.2538345, -75.57843804));
+        HashMap<String, Object> params = ApiEndPointsBodyGenerator.builder()
+                .getService(pokeCredential.getToken(),9,new Position(6.2538345, -75.57843804))
+                .build();
+
         Call<List<PokeStopPosition>> caller = endPoints.getPokeStopPositions(params);
 
         caller.enqueue(new Callback<List<PokeStopPosition>>() {
@@ -162,6 +161,10 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
             @Override
             public void onFailure(Call<List<PokeStopPosition>> call, Throwable t) {
                 Log.e("PKMERROR", "Error llamando servicio", t);
+                dialog.dismiss();
+                Toast toast = Toast.makeText(getContext(), "Error llamando servicio", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
             }
         });
     }
