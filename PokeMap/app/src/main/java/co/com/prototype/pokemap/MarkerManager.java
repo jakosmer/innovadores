@@ -11,6 +11,8 @@ import android.util.TimeUtils;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -46,6 +48,16 @@ public class MarkerManager {
                 .draggable(true));
 
         return  marker;
+    }
+
+    public Circle addCircle (LatLng position, double radio){
+        CircleOptions circleOptions = new CircleOptions()
+                .center(position)
+                .radius(radio)
+                .fillColor(Color.argb(30, 84, 162, 208))
+                .strokeWidth(1).strokeColor(Color.argb(150, 84, 162, 208));
+        Circle circle = mapa.addCircle(circleOptions);
+        return  circle;
     }
 
     public void addMarkerPokemon(PokemonPosition pokemonPosition){
