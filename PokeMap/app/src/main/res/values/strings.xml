@@ -23,12 +23,12 @@
     <string name="error_invalid_password">El password proporcionado es muy corto</string>
     <string name="error_incorrect_password">El password proporcionado es incorrecto</string>
     <string name="error_field_required">Este campo es obligatorio</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
     <string name="title_activity_web_view_container">Container</string>
+    <string name="login_failed">Login fallido :(.. intentalo de nuevo</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="pokeball_image_description">pokeball image</string>
     <string name="login_warning_for_google_account">Te recomendamos usar una cuenta google alternativa!</string>
+
 </resources>

@@ -5,11 +5,17 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import java.util.Calendar;
 
 /**
  * Created by carlviar on 2016/08/23.
@@ -25,6 +31,36 @@ public class PokeBallView extends LinearLayout {
         inflater.inflate(R.layout.poke_ball_view, this);
 
         imageButton = (ImageView)findViewById(R.id.iv_pokeball);
+
+        configureAnimation();
+    }
+
+
+    @Override
+    protected void onVisibilityChanged(View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        if(animator == null){
+            return;
+        }
+
+        if(visibility == VISIBLE){
+            animator.start();
+        }else{
+            animator.end();
+        }
+
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        animator.end();
+        animator = null;
+        imageButton = null;
+    }
+
+    private void configureAnimation(){
 
         ObjectAnimator anim1 = ObjectAnimator.ofFloat(imageButton, "x", 20f, 60f);
         ObjectAnimator anim2 = ObjectAnimator.ofFloat(imageButton, "x", 60f, 0f);
@@ -44,10 +80,16 @@ public class PokeBallView extends LinearLayout {
 
         animator.addListener(new Animator.AnimatorListener() {
             int count = 0;
+            boolean justDelayed = false;
 
             @Override
             public void onAnimationStart(Animator animation) {
 
+                if(!justDelayed) {
+                    imageButton.setImageResource(R.drawable.poke_ball_active256x256);
+                }
+
+                justDelayed = false;
             }
 
             @Override
@@ -60,7 +102,10 @@ public class PokeBallView extends LinearLayout {
                 long startDelay = 0;
 
                 if(count%5 == 0){
-                    startDelay = 2000;
+                    startDelay = 3000;
+                    justDelayed = true;
+
+                    imageButton.setImageResource(R.drawable.poke_ball256x256);
                 }
 
                 animator.setStartDelay(startDelay);
@@ -69,38 +114,14 @@ public class PokeBallView extends LinearLayout {
 
             @Override
             public void onAnimationCancel(Animator animation) {
-
+                imageButton.setImageResource(R.drawable.poke_ball256x256);
             }
 
             @Override
             public void onAnimationRepeat(Animator animation) {
-
+                Log.i("PGO-ANIMATION", "repeat at: " + Calendar.getInstance().getTime().toString());
             }
         });
 
     }
-
-
-    @Override
-    protected void onVisibilityChanged(View changedView, int visibility) {
-        super.onVisibilityChanged(changedView, visibility);
-
-        if(visibility == VISIBLE){
-            animator.start();
-        }else{
-            animator.end();
-        }
-
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
-        animator.end();
-        animator = null;
-        imageButton = null;
-    }
-
-
 }
