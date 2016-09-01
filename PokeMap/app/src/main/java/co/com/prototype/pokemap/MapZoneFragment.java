@@ -34,6 +34,7 @@ import co.com.prototype.pokemap.Model.Services.ApiFactoryClient;
 import co.com.prototype.pokemap.Model.Services.IApiContract;
 import co.com.prototype.pokemap.Security.PokeCredential;
 import co.com.prototype.pokemap.Security.PokeSecurity;
+import co.com.prototype.pokemap.Utils.ApiEndPointsBodyGenerator;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -80,12 +81,13 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
             TaskAnimation taskAnimation = new TaskAnimation(markerManager);
             taskAnimation.execute();
 
-            CircleOptions circleOptions = new CircleOptions()
-                    .center(new LatLng(6.26718156, -75.58027267))
-                    .radius(300)
-                    .fillColor(Color.argb(150, 84, 162, 208))
-                    .strokeWidth(1).strokeColor(Color.argb(150, 84, 162, 208));
-            Circle circle = mMap.addCircle(circleOptions);
+//            CircleOptions circleOptions = new CircleOptions()
+//                    .center(loc)
+//                    .radius(300)
+//                    .fillColor(Color.argb(150, 84, 162, 208))
+//                    .strokeWidth(1).strokeColor(Color.argb(150, 84, 162, 208));
+//            Circle circle = mMap.addCircle(circleOptions);
+            markerManager.addCircle(loc,300);
 
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 3));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(12)
@@ -145,11 +147,17 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         PokeCredential pokeCredential = pokeSecurity.getCredential();
 
         IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
-        HashMap<String, Object> params = new HashMap<>();
+
+        HashMap<String, Object> params = ApiEndPointsBodyGenerator.builder()
+                .getService(pokeCredential.getToken(),9,new Position(6.2538345, -75.57843804))
+                .build();
+
+//        IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
+//        HashMap<String, Object> params = new HashMap<>();
 //        params.put("token", "1/tonF2rg3bavTh84gxnN9OC3_xLVr5YK5ZO1xWwNeGmE");
-        params.put("token", pokeCredential.getToken());
-        params.put("width", 9);
-        params.put("position", new Position(6.2538345, -75.57843804));
+//        params.put("token", pokeCredential.getToken());
+//        params.put("width", 9);
+//        params.put("position", new Position(6.2538345, -75.57843804));
         Call<List<PokemonPosition>> caller = endPoints.getPokemonPositions(params);
 
         caller.enqueue(new Callback<List<PokemonPosition>>() {
