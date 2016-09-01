@@ -138,7 +138,7 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
         IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
 
         HashMap<String, Object> params = ApiEndPointsBodyGenerator.builder()
-                .getService(pokeCredential.getToken(),9,new Position(6.2538345, -75.57843804))
+                .getService(pokeCredential.getToken(),2,new Position(6.2538345, -75.57843804))
                 .build();
 
         Call<List<PokeStopPosition>> caller = endPoints.getPokeStopPositions(params);

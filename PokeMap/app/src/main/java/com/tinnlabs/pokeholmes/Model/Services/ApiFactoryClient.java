@@ -5,6 +5,9 @@ package com.tinnlabs.pokeholmes.Model.Services;
 import android.util.Log;
 
 import com.tinnlabs.pokeholmes.Security.PokeCipher;
+
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okio.Buffer;
@@ -24,6 +27,8 @@ public class ApiFactoryClient {
 
         if(ApiFactoryClient.endPoints == null){
             OkHttpClient.Builder okHttpClient = new OkHttpClient().newBuilder();
+            okHttpClient.connectTimeout(10, TimeUnit.SECONDS);
+            okHttpClient.readTimeout(10, TimeUnit.SECONDS);
             okHttpClient.addInterceptor(chain -> {
                 Buffer buffer = new Buffer();
                 chain.request().body().writeTo(buffer);

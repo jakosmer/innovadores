@@ -34,6 +34,7 @@ import com.tinnlabs.pokeholmes.Model.Services.ApiFactoryClient;
 import com.tinnlabs.pokeholmes.Model.Services.IApiContract;
 import com.tinnlabs.pokeholmes.Security.PokeCredential;
 import com.tinnlabs.pokeholmes.Security.PokeSecurity;
+import com.tinnlabs.pokeholmes.Utils.ApiEndPointsBodyGenerator;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -77,15 +78,16 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
 
         if (gpsLocation.validarGPS()){
-            TaskAnimation taskAnimation = new TaskAnimation(markerManager);
+            TaskAnimation taskAnimation = new TaskAnimation(markerManager, loc);
             taskAnimation.execute();
 
-            CircleOptions circleOptions = new CircleOptions()
-                    .center(new LatLng(6.26718156, -75.58027267))
-                    .radius(300)
-                    .fillColor(Color.argb(150, 84, 162, 208))
-                    .strokeWidth(1).strokeColor(Color.argb(150, 84, 162, 208));
-            Circle circle = mMap.addCircle(circleOptions);
+//            CircleOptions circleOptions = new CircleOptions()
+//                    .center(loc)
+//                    .radius(300)
+//                    .fillColor(Color.argb(150, 84, 162, 208))
+//                    .strokeWidth(1).strokeColor(Color.argb(150, 84, 162, 208));
+//            Circle circle = mMap.addCircle(circleOptions);
+            markerManager.addCircle(loc,300);
 
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 3));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(12)
@@ -115,7 +117,7 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
             if (myPosition[0] != null) {
                 myPosition[0].remove();
             }
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc1, 15));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc1, 18));
             myPosition[0] = markerManager.addMarkerGeneric(loc1);
 
             return true;
@@ -139,17 +141,23 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         return new LatLng((y + y0), (x + x0));
     }
 
-    private void getPositions(MarkerManager markerM, ProgressDialog dialog){
+    private void getPositions(MarkerManager markerM, ProgressDialog dialog, LatLng loc){
 
         PokeSecurity pokeSecurity = PokeSecurity.getInstance(getActivity());
         PokeCredential pokeCredential = pokeSecurity.getCredential();
 
         IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
-        HashMap<String, Object> params = new HashMap<>();
+
+        HashMap<String, Object> params = ApiEndPointsBodyGenerator.builder()
+                .getService(pokeCredential.getToken(),9,new Position(loc.latitude, loc.longitude))
+                .build();
+
+//        IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
+//        HashMap<String, Object> params = new HashMap<>();
 //        params.put("token", "1/tonF2rg3bavTh84gxnN9OC3_xLVr5YK5ZO1xWwNeGmE");
-        params.put("token", pokeCredential.getToken());
-        params.put("width", 9);
-        params.put("position", new Position(6.2538345, -75.57843804));
+//        params.put("token", pokeCredential.getToken());
+//        params.put("width", 9);
+//        params.put("position", new Position(6.2538345, -75.57843804));
         Call<List<PokemonPosition>> caller = endPoints.getPokemonPositions(params);
 
         caller.enqueue(new Callback<List<PokemonPosition>>() {
@@ -179,16 +187,18 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
         MarkerManager markerManager;
         ProgressDialog progressDialog;
+        LatLng latLng;
 
 
-        public  TaskAnimation(MarkerManager marker){
+        public  TaskAnimation(MarkerManager marker, LatLng loc){
             this.markerManager = marker;
+            this.latLng = loc;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                getPositions(markerManager, progressDialog);
+                getPositions(markerManager, progressDialog, latLng);
             } catch (Exception e) {
                 e.printStackTrace();
             }
