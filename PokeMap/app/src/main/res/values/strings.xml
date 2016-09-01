@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PokeMap</string>
+    <string name="app_name">Poke Holmes</string>
     <string name="search_title">Buscar</string>
     <string name="search_hint">Digite un lugar o dirección</string>
 

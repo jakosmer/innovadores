@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="co.com.prototype.pokemap" >
+    package="com.tinnlabs.pokeholmes" >
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -36,12 +36,12 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.tinnlabs.pokeholmes.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name="com.tinnlabs.pokeholmes.LoginActivity"
             android:label="@string/title_activity_login" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -50,7 +50,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".WebViewContainerActivity"
+            android:name="com.tinnlabs.pokeholmes.WebViewContainerActivity"
             android:label="@string/title_activity_web_view_container" >
         </activity>
     </application>

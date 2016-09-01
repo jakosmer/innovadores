@@ -8,7 +8,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:401881601919:android:98dfc4390da60828",
         "android_client_info": {
-          "package_name": "co.com.prototype.pokemap"
+          "package_name": "com.tinnlabs.pokemap"
         }
       },
       "oauth_client": [
@@ -16,7 +16,7 @@
           "client_id": "401881601919-hq7b22b8s1ith262sk3ct8228hva2vaj.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "co.com.prototype.pokemap",
+            "package_name": "com.tinnlabs.pokemap",
             "certificate_hash": "06BB975D0E401BB9170EFAE15C2A882A96FB824E"
           }
         },
