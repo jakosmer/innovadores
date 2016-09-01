@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.3"
 
     defaultConfig {
-        applicationId "com.tinnlabs.pokemap"
+        applicationId "com.tinnlabs.pokeholmes"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         minSdkVersion 16
         targetSdkVersion 23
