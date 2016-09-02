@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1066015235246",
+    "firebase_url": "https://poke-holmes.firebaseio.com",
+    "project_id": "poke-holmes",
+    "storage_bucket": "poke-holmes.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1066015235246:android:b0c2ee5deaca717c",
+        "android_client_info": {
+          "package_name": "com.tinnlabs.pokeholmes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1066015235246-l8n08ls10pmgta1fslcqoh55vvtohvcs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tinnlabs.pokeholmes",
+            "certificate_hash": "6469ED4E33C4BB4A7A8720724E4A4E47F371A042"
+          }
+        },
+        {
+          "client_id": "1066015235246-lmkima9tbp24vf1q83vkiq4uci2f2ol8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA92Q1fDXlBcYpB07n63y3VTdhvwUFS0pY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1066015235246-lmkima9tbp24vf1q83vkiq4uci2f2ol8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

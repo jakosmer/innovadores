@@ -1,12 +1,12 @@
 <resources>
     <string name="app_name">Poke Holmes</string>
-    <string name="search_title">Buscar</string>
-    <string name="search_hint">Digite un lugar o dirección</string>
+    <string name="search_title">Search</string>
+    <string name="search_hint">Enter a place or address</string>
 
     <string name="title_activity_map_zone">Map Zone</string>
     <string name="title_activity_main">PokeMap</string>
 
-    <string name="loading">Cargando</string>
+    <string name="loading">Loading..</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -16,19 +16,20 @@
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (opcional)</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Ingresar</string>
-    <string name="error_invalid_email">La dirección de email proporcionada no es valida</string>
-    <string name="error_invalid_password">El password proporcionado es muy corto</string>
-    <string name="error_incorrect_password">El password proporcionado es incorrecto</string>
-    <string name="error_field_required">Este campo es obligatorio</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in_short">Log in</string>
+    <string name="error_invalid_email">Email address is not valid</string>
+    <string name="error_invalid_password">Password is too short</string>
+    <string name="error_incorrect_password">Password is invalid</string>
+    <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
-    <string name="title_activity_web_view_container">Container</string>
-    <string name="login_failed">Login fallido :(.. intentalo de nuevo</string>
+    <string name="title_activity_web_view_container">Access</string>
+    <string name="login_failed">Login failed :(.. please try again</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="pokeball_image_description">pokeball image</string>
-    <string name="login_warning_for_google_account">Te recomendamos usar una cuenta google alternativa!</string>
+    <string name="login_warning_for_google_account">Maybe you should access using an alternative account!</string>
 
+    <!-- adMob configuration -->
+    <string name="banner_principal">ca-app-pub-5056183294247980/2158020751</string>
 </resources>

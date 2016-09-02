@@ -62,5 +62,6 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.0') {
         exclude module: 'support-annotations'
     }
+    compile 'com.google.android.gms:play-services-appindexing:9.0.0'
 }
 

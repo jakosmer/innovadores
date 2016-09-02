@@ -1,5 +1,7 @@
 package com.tinnlabs.pokeholmes;
 
+import android.*;
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
@@ -30,6 +32,12 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -86,6 +94,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private static final String LOGIN_STATE = "PGO_LOGIN_STATE";
 
     private OnMapReadyCallback callback;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
+
+    private InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,10 +138,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mProgressView = findViewById(R.id.login_progress);
 
-        View viewGoogleBtn =  findViewById(R.id.sign_in_button);
-        if(viewGoogleBtn != null){
+        View viewGoogleBtn = findViewById(R.id.sign_in_button);
+        if (viewGoogleBtn != null) {
             viewGoogleBtn.setOnClickListener(v -> {
-                switch (v.getId()){
+                switch (v.getId()) {
                     case R.id.sign_in_button:
                         PokeSecurity.getInstance(LoginActivity.this).signIn(RC_SIGN_IN);
                         break;
@@ -134,23 +149,45 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             });
         }
 
-        if (ContextCompat.checkSelfPermission(getBaseContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(getBaseContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             setCallback();
 
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
             mapFragment.getMapAsync(callback);
-        }else{
+        } else {
             ActivityCompat.requestPermissions(this,
-            new String[]{ACCESS_FINE_LOCATION},
-            REQUEST_FINE_LOCATION);
+                    new String[]{ACCESS_FINE_LOCATION},
+                    REQUEST_FINE_LOCATION);
         }
 
         mPokeballView = ((PokeBallView) findViewById(R.id.view_pokeball));
+
+        //ad config
+        AdRequest adRequest = new AdRequest.Builder()
+                                           .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                                           .addTestDevice("EBB15B318D42B25D62CA995AFD484995")
+                                           .build();
+
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId(getString(R.string.banner_principal));
+
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                PokeSecurity.getInstance(LoginActivity.this).startEntryPoint();
+            }
+        });
+        mInterstitialAd.loadAd(adRequest);
+
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
-    private void setCallback(){
+    private void setCallback() {
         callback = googleMap -> {
 
             GpsLocation gpsLocation = new GpsLocation(getApplicationContext());
@@ -198,8 +235,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Callback received when a permissions request has been completed.
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
         switch (requestCode) {
             case REQUEST_FINE_LOCATION: {
@@ -215,7 +251,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 } else {
                     Toast toast = Toast.makeText(getBaseContext(), "Sin permisos algunas funcionalidades no estarán disponibles",
                             Toast.LENGTH_LONG);
-                    toast.setGravity(Gravity.CENTER,0,0);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                 }
                 return;
@@ -295,38 +331,36 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     /**
      * Shows the progress UI and hides the login form.
      *
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
-    }*/
+     * @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2) private void showProgress(final boolean show) {
+     * // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+     * // for very easy animations. If available, use these APIs to fade-in
+     * // the progress spinner.
+     * if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+     * int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+     * <p>
+     * mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+     * mLoginFormView.animate().setDuration(shortAnimTime).alpha(
+     * show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+     * @Override public void onAnimationEnd(Animator animation) {
+     * mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+     * }
+     * });
+     * <p>
+     * mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+     * mProgressView.animate().setDuration(shortAnimTime).alpha(
+     * show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+     * @Override public void onAnimationEnd(Animator animation) {
+     * mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+     * }
+     * });
+     * } else {
+     * // The ViewPropertyAnimator APIs are not available, so simply show
+     * // and hide the relevant UI components.
+     * mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+     * mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+     * }
+     * }
+     */
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -381,14 +415,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == RC_SIGN_IN){
+        if (requestCode == RC_SIGN_IN) {
             //GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             String authCode = String.valueOf(data.getExtras().get(WebViewContainerActivity.PARAM_AUTH_CODE));
 
             IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
             HashMap<String, Object> params = ApiEndPointsBodyGenerator.builder()
-                                                                      .addAuthCode(authCode)
-                                                                      .build();
+                    .addAuthCode(authCode)
+                    .build();
 
             ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog.show();
@@ -400,8 +434,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 public void onResponse(Call<String> call, Response<String> response) {
 
                     PokeSecurity security = PokeSecurity.getInstance(LoginActivity.this);
-                    if(authCode != null && security.saveGoogleCredentials(authCode, response.body())){
-                        security.startEntryPoint();
+                    if (authCode != null && security.saveGoogleCredentials(authCode, response.body())) {
+                        if(mInterstitialAd.isLoaded()){
+                            mInterstitialAd.show();
+                        }else{
+                            security.startEntryPoint();
+                        }
                     }
 
                     progressDialog.dismiss();
@@ -413,14 +451,53 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     progressDialog.dismiss();
 
                     Toast toast = Toast.makeText(LoginActivity.this, R.string.login_failed, Toast.LENGTH_LONG);
-                    toast.setGravity(Gravity.CENTER,0,0);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                 }
             });
 
 
-
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Login Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://com.tinnlabs.pokeholmes/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Login Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://com.tinnlabs.pokeholmes/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
     }
 
     private interface ProfileQuery {

@@ -17,6 +17,8 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.tinnlabs.pokeholmes.Security.PokeSecurity;
 
 
@@ -62,6 +64,16 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         assert navigationView != null;
         navigationView.setNavigationItemSelectedListener(this);
+
+        AdView mAdView = (AdView) findViewById(R.id.adView_principal);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .addTestDevice("EBB15B318D42B25D62CA995AFD484995")
+                .build();
+
+        if(mAdView != null) {
+            mAdView.loadAd(adRequest);
+        }
     }
 
     @Override

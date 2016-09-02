@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="app_name">Poke Holmes</string>
+    <string name="search_title">Buscar</string>
+    <string name="search_hint">Digite un lugar o dirección</string>
+
+    <string name="title_activity_map_zone">Map Zone</string>
+    <string name="title_activity_main">PokeMap</string>
+
+    <string name="loading">Cargando..</string>
+
+    <string name="navigation_drawer_open">Abrir navegación</string>
+    <string name="navigation_drawer_close">Cerrar navegación</string>
+
+    <string name="action_settings">Configuraciones</string>
+    <string name="title_activity_login">PokeMap</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Correo</string>
+    <string name="prompt_password">Contraseña (opcional)</string>
+    <string name="action_sign_in_short">Ingresar</string>
+    <string name="error_invalid_email">La dirección de correo proporcionada no es valida</string>
+    <string name="error_invalid_password">La contraseña proporcionada es muy corta</string>
+    <string name="error_incorrect_password">La contraseña proporcionada es incorrecta</string>
+    <string name="error_field_required">Este campo es obligatorio</string>
+    <string name="title_activity_web_view_container">Acceso</string>
+    <string name="login_failed">Acceso fallido :(.. intentalo de nuevo</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="pokeball_image_description">imagen principal</string>
+    <string name="login_warning_for_google_account">Te recomendamos usar una cuenta google alternativa!</string>
+
+    <!-- adMob configuration -->
+    <string name="banner_principal">ca-app-pub-5056183294247980/2158020751</string>
+</resources>
