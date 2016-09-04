@@ -169,6 +169,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                            .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                                            .addTestDevice("EBB15B318D42B25D62CA995AFD484995")
                                             .addTestDevice("BD21A88C03DC2D22999E4D2FA94B79D8")
+                .addTestDevice("AD91A0078CFE57D4DC4F184CA7C9A3C6")
                                            .build();
 
         mInterstitialAd = new InterstitialAd(this);

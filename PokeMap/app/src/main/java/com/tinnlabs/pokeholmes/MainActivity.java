@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .addTestDevice("EBB15B318D42B25D62CA995AFD484995")
                 .addTestDevice("BD21A88C03DC2D22999E4D2FA94B79D8")
+                .addTestDevice("AD91A0078CFE57D4DC4F184CA7C9A3C6")
                 .build();
 
         if(mAdView != null) {
@@ -141,7 +142,7 @@ public class MainActivity extends AppCompatActivity
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragment).commit();
         }else{
-            Toast toast = Toast.makeText(MainActivity.this, "Under construction",
+            Toast toast = Toast.makeText(MainActivity.this, "EN CONSTRUCCIÓN",
                     Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER,0,0);
             toast.show();

@@ -95,7 +95,7 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
 
                         }
                     });
-            markerManager.addCircle(loc,300);
+            markerManager.addCircle(loc,800);
         }
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -139,7 +139,7 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
         IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
 
         HashMap<String, Object> params = ApiEndPointsBodyGenerator.builder()
-                .getService(pokeCredential.getToken(),2,new Position(loc.latitude, loc.longitude))
+                .getService(pokeCredential.getToken(),4,new Position(loc.latitude, loc.longitude))
                 .build();
 
         Call<List<PokeStopPosition>> caller = endPoints.getPokeStopPositions(params);
