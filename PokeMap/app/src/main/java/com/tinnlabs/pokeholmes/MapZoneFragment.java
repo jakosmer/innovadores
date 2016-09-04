@@ -87,14 +87,14 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 //                    .fillColor(Color.argb(150, 84, 162, 208))
 //                    .strokeWidth(1).strokeColor(Color.argb(150, 84, 162, 208));
 //            Circle circle = mMap.addCircle(circleOptions);
-            markerManager.addCircle(loc,300);
+            markerManager.addCircle(loc,100);
 
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 3));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(12)
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 5));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(18)
                     , 1000, new GoogleMap.CancelableCallback() {
                         @Override
                         public void onFinish() {
-                            mMap.animateCamera(CameraUpdateFactory.zoomTo(12), 2000, null);
+                            mMap.animateCamera(CameraUpdateFactory.zoomTo(18), 2000, null);
                         }
 
                         @Override
@@ -102,6 +102,7 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
                         }
                     });
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 18));
         }
 
         mMap.setOnMapClickListener(latLng -> {

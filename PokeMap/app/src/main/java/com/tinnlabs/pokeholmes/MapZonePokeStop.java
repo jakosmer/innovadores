@@ -78,7 +78,7 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
         final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
 
         if (gpsLocation.validarGPS()){
-            TaskAnimation taskAnimation = new TaskAnimation(markerManager,"");
+            TaskAnimation taskAnimation = new TaskAnimation(markerManager,loc);
             taskAnimation.execute();
 
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 3));
@@ -95,6 +95,7 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
 
                         }
                     });
+            markerManager.addCircle(loc,300);
         }
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -123,7 +124,7 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    private void getPositions(MarkerManager markerM, String team, ProgressDialog dialog){
+    private void getPositions(MarkerManager markerM, String team, ProgressDialog dialog, LatLng loc){
         PokeSecurity pokeSecurity = PokeSecurity.getInstance(getActivity());
         PokeCredential pokeCredential = pokeSecurity.getCredential();
 //        IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
@@ -138,7 +139,7 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
         IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
 
         HashMap<String, Object> params = ApiEndPointsBodyGenerator.builder()
-                .getService(pokeCredential.getToken(),2,new Position(6.2538345, -75.57843804))
+                .getService(pokeCredential.getToken(),2,new Position(loc.latitude, loc.longitude))
                 .build();
 
         Call<List<PokeStopPosition>> caller = endPoints.getPokeStopPositions(params);
@@ -171,17 +172,17 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
         String color;
         MarkerManager markerManager;
         ProgressDialog progressDialog;
+        LatLng latLng;
 
-
-        public  TaskAnimation(MarkerManager marker,String color){
-            this.color = color;
+        public  TaskAnimation(MarkerManager marker, LatLng loc){
             this.markerManager = marker;
+            this.latLng = loc;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                getPositions(markerManager,color, progressDialog);
+                getPositions(markerManager,color, progressDialog, latLng);
             } catch (Exception e) {
                 e.printStackTrace();
             }
