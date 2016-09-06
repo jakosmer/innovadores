@@ -32,6 +32,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -45,6 +48,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -100,6 +104,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private GoogleApiClient client;
 
+    /*private Socket mSocket;
+    {
+        try {
+            mSocket = IO.socket("http://192.168.56.1:3000");
+        } catch (URISyntaxException e) {}
+    }*/
+
     private InterstitialAd mInterstitialAd;
 
     @Override
@@ -111,6 +122,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         setContentView(R.layout.activity_login);
         // Set up the login form.
 
+        /*mSocket.connect();
+
+        mSocket.on("serverEvent", args -> runOnUiThread(() -> Toast.makeText(LoginActivity.this, args[0].toString(), Toast.LENGTH_SHORT).show()));
+
+        mSocket.emit("connection", "MOBILE");*/
 
         //pruebas
 
