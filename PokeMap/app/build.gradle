@@ -56,6 +56,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.github.nkzawa:socket.io-client:0.3.0'
+    compile 'pl.bclogic:pulsator4droid:1.0.3'
     //retrofit: http://square.github.io/retrofit/
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.0'

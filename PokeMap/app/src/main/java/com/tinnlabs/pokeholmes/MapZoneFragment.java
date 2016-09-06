@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -35,6 +36,8 @@ import com.tinnlabs.pokeholmes.Model.Services.IApiContract;
 import com.tinnlabs.pokeholmes.Security.PokeCredential;
 import com.tinnlabs.pokeholmes.Security.PokeSecurity;
 import com.tinnlabs.pokeholmes.Utils.ApiEndPointsBodyGenerator;
+
+import pl.bclogic.pulsator4droid.library.PulsatorLayout;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -51,6 +54,19 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        PulsatorLayout pulsator = (PulsatorLayout) view.findViewById(R.id.pulsator);
+        pulsator.start();
+
+        ImageView imageView = (ImageView)view.findViewById(R.id.iv_search_pokemon);
+        if(imageView != null){
+            imageView.setOnClickListener( viewClicked -> {
+                if(pulsator.getVisibility() == View.INVISIBLE){
+                    pulsator.setVisibility(View.VISIBLE);
+                } else {
+                    pulsator.setVisibility(View.INVISIBLE);
+                }
+            });
+        }
 
         return view;
     }
