@@ -45,6 +45,7 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private MarkerManager markerManager;
+    private LatLng localizacion;
 
     @Nullable
     @Override
@@ -91,22 +92,22 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
             }
 
             GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
-            LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
+            localizacion = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
             markerManager = new MarkerManager(mMap, getResources(), this.getActivity().getPackageName());
-            final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
+            final Marker[] myPosition = {markerManager.addMarkerGeneric(localizacion)};
 
             if (gpsLocation.validarGPS()){
-                TaskAnimation taskAnimation = new TaskAnimation(markerManager,"");
+                TaskAnimation taskAnimation = new TaskAnimation(markerManager,"",localizacion);
                 taskAnimation.execute();
 
 
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 3));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(localizacion, 3));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(12)
                         , 1000, new GoogleMap.CancelableCallback() {
                             @Override
                             public void onFinish() {
                                 mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
-                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(localizacion, 15));
                             }
 
                             @Override
@@ -114,7 +115,7 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
 
                             }
                         });
-
+                markerManager.addCircle(localizacion,800);
             }
 
             mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -146,7 +147,7 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
 
     }
 
-    private void getPositions(MarkerManager markerM, String team, ProgressDialog dialog){
+    private void getPositions(MarkerManager markerM, String team, ProgressDialog dialog, LatLng loc){
         PokeSecurity pokeSecurity = PokeSecurity.getInstance(getActivity());
         PokeCredential pokeCredential = pokeSecurity.getCredential();
 
@@ -163,11 +164,10 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
         IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
 
         HashMap<String, Object> params = ApiEndPointsBodyGenerator.builder()
-                .getService(pokeCredential.getToken(),9,new Position(6.2538345, -75.57843804))
+                .getService(pokeCredential.getToken(),4,new Position(loc.latitude, loc.longitude))
                 .build();
 
         Call<List<GymPosition>> caller = endPoints.getGymPositions(params);
-//        Call<List<GymPosition>> caller = endPoints.getGymPositions(params);
 
         caller.enqueue(new Callback<List<GymPosition>>() {
             @Override
@@ -208,17 +208,18 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
         String color;
         MarkerManager markerManager;
         ProgressDialog progressDialog;
+        LatLng latLng;
 
-
-        public  TaskAnimation(MarkerManager marker,String color){
+        public  TaskAnimation(MarkerManager marker,String color, LatLng loc){
             this.color = color;
             this.markerManager = marker;
+            this.latLng = loc;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                getPositions(markerManager,color, progressDialog);
+                getPositions(markerManager,color, progressDialog, latLng);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -264,7 +265,7 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
                 break;
         }
         mMap.clear();
-        TaskAnimation taskAnimation = new TaskAnimation(markerManager,gymName);
+        TaskAnimation taskAnimation = new TaskAnimation(markerManager,gymName, localizacion);
         taskAnimation.execute();
         }
     }

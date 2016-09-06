@@ -39,7 +39,7 @@ public class MarkerCounter {
 
     public void startCounter(long timeToHide) {
         color = new Paint();
-        color.setTextSize(12);
+        color.setTextSize(40);
         color.setTextAlign(Paint.Align.CENTER);
         color.setColor(Color.BLACK);
 
@@ -62,7 +62,7 @@ public class MarkerCounter {
 
                 public void onTick(long millisUntilFinished) {
                     Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-                    Bitmap bmp = Bitmap.createBitmap(80, 90, conf);
+                    Bitmap bmp = Bitmap.createBitmap(200, 200, conf);
 
                     Canvas canvas = new Canvas(bmp);
 
@@ -71,11 +71,11 @@ public class MarkerCounter {
                     paint.setStyle(Paint.Style.FILL_AND_STROKE);
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        canvas.drawRoundRect(5,0,55,25,10,10,paint);
+                        canvas.drawRoundRect(20,0,180,60,30,30,paint);
                     }else
                         canvas.drawRect(5,0,55,25,paint);
-                    canvas.drawBitmap(BitmapFactory.decodeResource(res, idPoke), 0, 15, color);
-                    canvas.drawText(timeCalculate(millisUntilFinished), 30, 15, color);
+                    canvas.drawBitmap(BitmapFactory.decodeResource(res, idPoke), 0, 30, color);
+                    canvas.drawText(timeCalculate(millisUntilFinished), 100, 45, color);
 
                     publishProgress(bmp);
                 }

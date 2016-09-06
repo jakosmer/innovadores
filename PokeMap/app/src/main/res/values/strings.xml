@@ -4,7 +4,7 @@
     <string name="search_hint">Enter a place or address</string>
 
     <string name="title_activity_map_zone">Map Zone</string>
-    <string name="title_activity_main">PokeMap</string>
+    <string name="title_activity_main">Poke Holmes</string>
 
     <string name="loading">Loading..</string>
 
@@ -12,7 +12,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-    <string name="title_activity_login">PokeMap</string>
+    <string name="title_activity_login">Poke Holmes</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>

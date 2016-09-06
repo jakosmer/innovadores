@@ -44,7 +44,7 @@ public class MarkerManager {
     public Marker addMarkerGeneric(LatLng position){
 
         Marker marker = mapa.addMarker(new MarkerOptions().position(position)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_p2_64x64))
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_p2_32x32))
                 .draggable(true));
 
         return  marker;
@@ -74,7 +74,7 @@ public class MarkerManager {
         Bitmap bmp = Bitmap.createBitmap(200, 200, conf);
 
         Paint color = new Paint();
-        color.setTextSize(30);
+        color.setTextSize(40);
         color.setColor(Color.BLACK);
 
         Canvas canvas = new Canvas(bmp);
@@ -95,7 +95,7 @@ public class MarkerManager {
     public void addMarkerGym(GymPosition gymPosition, String team){
         try {
             team = team.toLowerCase();
-            String name = "battle_arena_"+team+"_80";
+            String name = "battle_arena_"+team+"_40";
 
             int id = resources.getIdentifier(name, "drawable", this.paquete);
             mapa.addMarker(new MarkerOptions().position(gymPosition.getPosition().convertToLatLng()).icon(BitmapDescriptorFactory.fromResource(id)));
@@ -110,7 +110,7 @@ public class MarkerManager {
 //            team = team.toLowerCase();
 //            String name = "battle_arena_"+team+"_80";
 //            int id = resources.getIdentifier(name, "drawable", this.paquete);
-            mapa.addMarker(new MarkerOptions().position(pokeStopPosition.getPosition().convertToLatLng()).icon(BitmapDescriptorFactory.fromResource(R.drawable.pokestop30x50)));
+            mapa.addMarker(new MarkerOptions().position(pokeStopPosition.getPosition().convertToLatLng()).icon(BitmapDescriptorFactory.fromResource(R.drawable.pokestop)));
 
         }catch (Exception e){
             Log.e("addMarkerGym",e.getMessage());
