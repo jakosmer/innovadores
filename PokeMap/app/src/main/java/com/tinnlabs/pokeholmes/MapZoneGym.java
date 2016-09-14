@@ -151,16 +151,6 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
         PokeSecurity pokeSecurity = PokeSecurity.getInstance(getActivity());
         PokeCredential pokeCredential = pokeSecurity.getCredential();
 
-//        IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
-//
-//        HashMap<String, Object> params = new HashMap<>();
-////        params.put("token", "1/tonF2rg3bavTh84gxnN9OC3_xLVr5YK5ZO1xWwNeGmE");
-//        params.put("token", pokeCredential.getToken());
-//        params.put("width", 9);
-//        params.put("position", new Position(6.2538345, -75.57843804));
-
-
-
         IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
 
         HashMap<String, Object> params = ApiEndPointsBodyGenerator.builder()
@@ -173,6 +163,7 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
             @Override
             public void onResponse(Call<List<GymPosition>> call, Response<List<GymPosition>> response) {
                 List<GymPosition> pos = response.body();
+
 
                 dialog.dismiss();
 

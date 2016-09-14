@@ -39,7 +39,7 @@ public class MarkerCounter {
 
     public void startCounter(long timeToHide) {
         color = new Paint();
-        color.setTextSize(40);
+        color.setTextSize(res.getDimensionPixelSize(R.dimen.text_counter));
         color.setTextAlign(Paint.Align.CENTER);
         color.setColor(Color.BLACK);
 

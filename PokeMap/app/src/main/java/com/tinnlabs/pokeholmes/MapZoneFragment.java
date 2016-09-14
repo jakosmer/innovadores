@@ -48,6 +48,9 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private MarkerManager markerManager;
     private LatLng localizacion;
+    private PulsatorLayout pulsator;
+    private FloatingActionButton search;
+    private Circle area;
 
     @Nullable
     @Override
@@ -55,24 +58,18 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         View view = inflater.inflate(R.layout.activity_map_zone, container, false);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.search_poke);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        PulsatorLayout pulsator = (PulsatorLayout) view.findViewById(R.id.pulsator);
+        pulsator = (PulsatorLayout) view.findViewById(R.id.pulsator);
         pulsator.start();
 
-        ImageView imageView = (ImageView)view.findViewById(R.id.iv_search_pokemon);
-        if(imageView != null){
-            imageView.setOnClickListener( viewClicked -> {
-                if(pulsator.getVisibility() == View.INVISIBLE){
-                    pulsator.setVisibility(View.VISIBLE);
-                } else {
-                    pulsator.setVisibility(View.INVISIBLE);
-                }
-            });
-        }
-
-        FloatingActionButton actionA = (FloatingActionButton) view.findViewById(R.id.action_a);
-        actionA.setOnClickListener(this::floatingClick);
+        search = (FloatingActionButton) view.findViewById(R.id.search_poke);
+        search.setOnClickListener(this::floatingClick);
+        search.setOnClickListener(v -> {
+            pulsator.setVisibility(View.VISIBLE);
+            search.setVisibility(View.INVISIBLE);
+            floatingClick(v);
+        });
 
         return view;
     }
@@ -100,16 +97,12 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         final Marker[] myPosition = {markerManager.addMarkerGeneric(localizacion)};
 
         if (gpsLocation.validarGPS()){
+            search.setVisibility(View.INVISIBLE);
+            pulsator.setVisibility(View.VISIBLE);
             TaskAnimation taskAnimation = new TaskAnimation(markerManager, localizacion);
             taskAnimation.execute();
 
-//            CircleOptions circleOptions = new CircleOptions()
-//                    .center(loc)
-//                    .radius(300)
-//                    .fillColor(Color.argb(150, 84, 162, 208))
-//                    .strokeWidth(1).strokeColor(Color.argb(150, 84, 162, 208));
-//            Circle circle = mMap.addCircle(circleOptions);
-            markerManager.addCircle(localizacion,400);
+            area = markerManager.addCircle(localizacion,400);
 
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(localizacion, 5));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(16)
@@ -131,6 +124,7 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
             if (myPosition[0] != null) {
                 myPosition[0].remove();
             }
+            localizacion = latLng;
             myPosition[0] = markerManager.addMarkerGeneric(localizacion);
         });
 
@@ -175,12 +169,6 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
                 .getService(pokeCredential.getToken(),9,new Position(loc.latitude, loc.longitude))
                 .build();
 
-//        IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
-//        HashMap<String, Object> params = new HashMap<>();
-//        params.put("token", "1/tonF2rg3bavTh84gxnN9OC3_xLVr5YK5ZO1xWwNeGmE");
-//        params.put("token", pokeCredential.getToken());
-//        params.put("width", 9);
-//        params.put("position", new Position(6.2538345, -75.57843804));
         Call<List<PokemonPosition>> caller = endPoints.getPokemonPositions(params);
 
         caller.enqueue(new Callback<List<PokemonPosition>>() {
@@ -188,7 +176,13 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
             public void onResponse(Call<List<PokemonPosition>> call, Response<List<PokemonPosition>> response) {
                 List<PokemonPosition> pos = response.body();
 
-                dialog.dismiss();
+                pulsator.setVisibility(View.INVISIBLE);
+                search.setVisibility(View.VISIBLE);
+                if(pos.isEmpty()){
+                    Toast toast = Toast.makeText(getContext(), "No se encontraron pokemones cerca", Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER,0,0);
+                    toast.show();
+                }
 
                 for (PokemonPosition pokemonPosition: pos){
                     markerM.addMarkerPokemon(pokemonPosition);
@@ -237,9 +231,9 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
         @Override
         protected void onPreExecute() {
-            progressDialog = new ProgressDialog(getActivity());
-            progressDialog.show();
-            progressDialog.setContentView(R.layout.custom_progressdialog);
+//            progressDialog = new ProgressDialog(getActivity());
+//            progressDialog.show();
+//            progressDialog.setContentView(R.layout.custom_progressdialog);
         }
 
 
@@ -249,7 +243,8 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
     }
 
     public void floatingClick(View view){
-
+        area.remove();
+        area = markerManager.addCircle(localizacion,400);
         TaskAnimation taskAnimation = new TaskAnimation(markerManager, localizacion);
         taskAnimation.execute();
     }

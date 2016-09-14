@@ -27,8 +27,8 @@ public class ApiFactoryClient {
 
         if(ApiFactoryClient.endPoints == null){
             OkHttpClient.Builder okHttpClient = new OkHttpClient().newBuilder();
-            okHttpClient.connectTimeout(10, TimeUnit.SECONDS);
-            okHttpClient.readTimeout(10, TimeUnit.SECONDS);
+            okHttpClient.connectTimeout(60, TimeUnit.SECONDS);
+            okHttpClient.readTimeout(60, TimeUnit.SECONDS);
             okHttpClient.addInterceptor(chain -> {
                 Buffer buffer = new Buffer();
                 chain.request().body().writeTo(buffer);

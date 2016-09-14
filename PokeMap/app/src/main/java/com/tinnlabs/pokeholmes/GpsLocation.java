@@ -73,16 +73,16 @@ public class GpsLocation extends Service implements LocationListener {
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-        Toast toast = Toast.makeText(context, "GPS ACTIVO, vuelva a consultar", Toast.LENGTH_LONG);
+        /*Toast toast = Toast.makeText(context, "GPS ACTIVO, vuelva a consultar", Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER,0,0);
-        toast.show();
+        toast.show();*/
     }
 
     @Override
     public void onProviderEnabled(String provider) {
-        Toast toast = Toast.makeText(context, "GPS ACTIVO, vuelva a consultar", Toast.LENGTH_LONG);
+        /*Toast toast = Toast.makeText(context, "GPS ACTIVO, vuelva a consultar", Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER,0,0);
-        toast.show();
+        toast.show();*/
     }
 
     @Override

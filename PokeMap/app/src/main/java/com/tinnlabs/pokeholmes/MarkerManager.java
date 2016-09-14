@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.SystemClock;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TimeUtils;
 
@@ -74,7 +75,8 @@ public class MarkerManager {
         Bitmap bmp = Bitmap.createBitmap(200, 200, conf);
 
         Paint color = new Paint();
-        color.setTextSize(40);
+
+        color.setTextSize(resources.getDimensionPixelSize(R.dimen.text_counter));
         color.setColor(Color.BLACK);
 
         Canvas canvas = new Canvas(bmp);

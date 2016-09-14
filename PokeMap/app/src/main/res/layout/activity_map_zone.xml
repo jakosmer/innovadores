@@ -17,15 +17,19 @@
         android:layout_width="80dp"
         android:layout_height="80dp">
 
-        <ImageView
-            android:id="@+id/iv_search_pokemon"
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/search_poke"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_search"
-            android:background="@android:color/darker_gray"
-            android:layout_marginLeft="23dp"
-            android:layout_marginTop="23dp"
-            android:elevation="1dp" />
+            android:layout_marginLeft="9dp"
+            android:layout_marginTop="9dp"
+            android:elevation="1dp"
+            fab:fab_colorNormal="@color/search_button"
+            fab:fab_title="Blue Team"
+            fab:fab_icon="@android:drawable/ic_menu_search"
+            fab:fab_colorPressed="@color/search_button"
+            fab:fab_size="mini"/>
+
 
         <pl.bclogic.pulsator4droid.library.PulsatorLayout
             android:id="@+id/pulsator"
@@ -41,17 +45,5 @@
         </pl.bclogic.pulsator4droid.library.PulsatorLayout>
 
     </RelativeLayout>
-
-    <com.getbase.floatingactionbutton.FloatingActionButton
-        android:id="@+id/search_poke"
-        android:layout_marginLeft="5sp"
-        android:layout_marginTop="5sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        fab:fab_colorNormal="@color/white_pressed"
-        fab:fab_title="Blue Team"
-        fab:fab_icon="@drawable/bombillo24x24"
-        fab:fab_colorPressed="@color/white_pressed"
-        fab:fab_size="mini"/>
 
 </RelativeLayout>
