@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -45,6 +46,8 @@ import retrofit2.Response;
 public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private MarkerManager markerManager;
+    private LatLng localizacion;
 
     @Nullable
     @Override
@@ -52,7 +55,7 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         View view = inflater.inflate(R.layout.activity_map_zone, container, false);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.search_poke);
         mapFragment.getMapAsync(this);
         PulsatorLayout pulsator = (PulsatorLayout) view.findViewById(R.id.pulsator);
         pulsator.start();
@@ -67,6 +70,9 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
                 }
             });
         }
+
+        FloatingActionButton actionA = (FloatingActionButton) view.findViewById(R.id.action_a);
+        actionA.setOnClickListener(this::floatingClick);
 
         return view;
     }
@@ -89,12 +95,12 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         }
 
         GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
-        LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
-        MarkerManager markerManager = new MarkerManager(mMap, getResources(), this.getActivity().getPackageName());
-        final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
+        localizacion = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
+        markerManager = new MarkerManager(mMap, getResources(), this.getActivity().getPackageName());
+        final Marker[] myPosition = {markerManager.addMarkerGeneric(localizacion)};
 
         if (gpsLocation.validarGPS()){
-            TaskAnimation taskAnimation = new TaskAnimation(markerManager, loc);
+            TaskAnimation taskAnimation = new TaskAnimation(markerManager, localizacion);
             taskAnimation.execute();
 
 //            CircleOptions circleOptions = new CircleOptions()
@@ -103,9 +109,9 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 //                    .fillColor(Color.argb(150, 84, 162, 208))
 //                    .strokeWidth(1).strokeColor(Color.argb(150, 84, 162, 208));
 //            Circle circle = mMap.addCircle(circleOptions);
-            markerManager.addCircle(loc,400);
+            markerManager.addCircle(localizacion,400);
 
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 5));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(localizacion, 5));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(16)
                     , 1000, new GoogleMap.CancelableCallback() {
                         @Override
@@ -118,14 +124,14 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
                         }
                     });
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 16));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(localizacion, 16));
         }
 
         mMap.setOnMapClickListener(latLng -> {
             if (myPosition[0] != null) {
                 myPosition[0].remove();
             }
-            myPosition[0] = markerManager.addMarkerGeneric(latLng);
+            myPosition[0] = markerManager.addMarkerGeneric(localizacion);
         });
 
         mMap.setOnMyLocationButtonClickListener(() -> {
@@ -240,5 +246,11 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         @Override
         protected void onProgressUpdate(String... text) {
         }
+    }
+
+    public void floatingClick(View view){
+
+        TaskAnimation taskAnimation = new TaskAnimation(markerManager, localizacion);
+        taskAnimation.execute();
     }
 }
