@@ -24,6 +24,7 @@
         fab:fab_addButtonColorPressed="@color/white_pressed"
         fab:fab_addButtonPlusIconColor="@color/half_black"
         fab:fab_labelStyle="@style/menu_labels_style"
+        fab:fab_size="mini"
         android:layout_marginBottom="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp">
@@ -35,7 +36,8 @@
             fab:fab_colorNormal="@color/red"
             fab:fab_title="Red Team"
             fab:fab_icon="@drawable/gym24x24"
-            fab:fab_colorPressed="@color/white_pressed"/>
+            fab:fab_colorPressed="@color/white_pressed"
+            fab:fab_size="mini"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/action_b"
@@ -44,7 +46,8 @@
             fab:fab_colorNormal="@color/blue"
             fab:fab_title="Blue Team"
             fab:fab_icon="@drawable/gym24x24"
-            fab:fab_colorPressed="@color/white_pressed"/>
+            fab:fab_colorPressed="@color/white_pressed"
+            fab:fab_size="mini"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/action_y"
@@ -53,7 +56,8 @@
             fab:fab_colorNormal="@color/yellow"
             fab:fab_title="Yellow Team"
             fab:fab_icon="@drawable/gym24x24"
-            fab:fab_colorPressed="@color/white_pressed"/>
+            fab:fab_colorPressed="@color/white_pressed"
+            fab:fab_size="mini"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/action_a"
@@ -62,7 +66,8 @@
             fab:fab_colorNormal="@color/white"
             fab:fab_title="All Team"
             fab:fab_icon="@drawable/gym24x24"
-            fab:fab_colorPressed="@color/white_pressed"/>
+            fab:fab_colorPressed="@color/white_pressed"
+            fab:fab_size="mini"/>
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 

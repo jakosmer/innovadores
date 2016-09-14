@@ -1,8 +1,7 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:custom="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -13,4 +12,16 @@
         android:layout_height="match_parent"
         tools:context=".MapZoneFragment" />
 
-</LinearLayout>
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/search_poke"
+        android:layout_marginLeft="5sp"
+        android:layout_marginTop="5sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        fab:fab_colorNormal="@color/white_pressed"
+        fab:fab_title="Blue Team"
+        fab:fab_icon="@drawable/bombillo24x24"
+        fab:fab_colorPressed="@color/white_pressed"
+        fab:fab_size="mini"/>
+
+</RelativeLayout>
