@@ -105,10 +105,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private GoogleApiClient client;
 
     /*private Socket mSocket;
+
     {
         try {
             mSocket = IO.socket("http://192.168.56.1:3000");
-        } catch (URISyntaxException e) {}
+        } catch (URISyntaxException e) {
+
+        }
     }*/
 
     private InterstitialAd mInterstitialAd;
@@ -122,11 +125,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         setContentView(R.layout.activity_login);
         // Set up the login form.
 
-        /*mSocket.connect();
+        //mSocket.connect();
 
-        mSocket.on("serverEvent", args -> runOnUiThread(() -> Toast.makeText(LoginActivity.this, args[0].toString(), Toast.LENGTH_SHORT).show()));
+        //mSocket.on("serverEvent", args -> runOnUiThread(() -> Toast.makeText(LoginActivity.this, args[0].toString(), Toast.LENGTH_SHORT).show()));
 
-        mSocket.emit("connection", "MOBILE");*/
+        //mSocket.emit("connection", "MOBILE");
 
         //pruebas
 

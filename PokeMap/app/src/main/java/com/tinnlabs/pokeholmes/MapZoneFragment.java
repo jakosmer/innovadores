@@ -3,7 +3,6 @@ package com.tinnlabs.pokeholmes;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,19 +13,23 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
+
+
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -52,6 +55,8 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
     private FloatingActionButton search;
     private Circle area;
 
+    private Socket mSocket;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -70,6 +75,19 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
             search.setVisibility(View.INVISIBLE);
             floatingClick(v);
         });
+
+        try {
+
+            mSocket = IO.socket("http://192.168.42.74:3000");
+
+        } catch (URISyntaxException e) {
+
+        }
+
+        mSocket.on("serverEvent", onMessageFromServerReceived);
+        mSocket.connect();
+
+        mSocket.emit("connection", "mobile");
 
         return view;
     }
@@ -199,6 +217,18 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
             }
         });
     }
+
+    private Emitter.Listener onMessageFromServerReceived = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            Object data = "nada";
+            if(args.length > 0) {
+                data = args[0];
+            }
+
+            Log.i("TAG", "llego desde socket: " + data.toString());
+        }
+    };
 
     class TaskAnimation extends AsyncTask<Void, String, Void> {
 
