@@ -120,7 +120,7 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
             TaskAnimation taskAnimation = new TaskAnimation(markerManager, localizacion);
             taskAnimation.execute();
 
-            area = markerManager.addCircle(localizacion,400);
+            area = markerManager.addCircle(localizacion,70);
 
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(localizacion, 5));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(16)
@@ -154,6 +154,7 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
             }
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc1, 18));
             myPosition[0] = markerManager.addMarkerGeneric(loc1);
+            localizacion = loc1;
 
             return true;
         });
@@ -274,7 +275,7 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
     public void floatingClick(View view){
         area.remove();
-        area = markerManager.addCircle(localizacion,400);
+        area = markerManager.addCircle(localizacion,70);
         TaskAnimation taskAnimation = new TaskAnimation(markerManager, localizacion);
         taskAnimation.execute();
     }

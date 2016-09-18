@@ -14,10 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
@@ -31,6 +33,8 @@ import com.tinnlabs.pokeholmes.Model.Services.IApiContract;
 import com.tinnlabs.pokeholmes.Security.PokeCredential;
 import com.tinnlabs.pokeholmes.Security.PokeSecurity;
 import com.tinnlabs.pokeholmes.Utils.ApiEndPointsBodyGenerator;
+
+import pl.bclogic.pulsator4droid.library.PulsatorLayout;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -41,6 +45,11 @@ import retrofit2.Response;
 public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private PulsatorLayout pulsator;
+    private FloatingActionButton search;
+    private Circle area;
+    private MarkerManager markerManager;
+    private LatLng localizacion;
 
     @Nullable
     @Override
@@ -51,7 +60,19 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        pulsator = (PulsatorLayout) view.findViewById(R.id.pulsator);
+        pulsator.start();
+
+        search = (FloatingActionButton) view.findViewById(R.id.search_poke);
+        search.setOnClickListener(this::floatingSearch);
+        search.setOnClickListener(v -> {
+            pulsator.setVisibility(View.VISIBLE);
+            search.setVisibility(View.INVISIBLE);
+            floatingSearch(v);
+        });
+
         return view;
+
     }
 
     /**
@@ -74,11 +95,13 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
         //FloatingActionButton selectGym = (FloatingActionButton)this.getActivity().findViewById(R.id.gym);
         GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
         LatLng loc = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
-        MarkerManager markerManager = new MarkerManager(mMap, getResources(), this.getActivity().getPackageName());
+        markerManager = new MarkerManager(mMap, getResources(), this.getActivity().getPackageName());
         final Marker[] myPosition = {markerManager.addMarkerGeneric(loc)};
 
-        if (gpsLocation.validarGPS()){
-            TaskAnimation taskAnimation = new TaskAnimation(markerManager,loc);
+        if (gpsLocation.validarGPS()) {
+            pulsator.setVisibility(View.VISIBLE);
+            search.setVisibility(View.INVISIBLE);
+            TaskAnimation taskAnimation = new TaskAnimation(markerManager, loc);
             taskAnimation.execute();
 
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 3));
@@ -95,7 +118,7 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
 
                         }
                     });
-            markerManager.addCircle(loc,800);
+            area = markerManager.addCircle(loc, 800);
         }
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -104,6 +127,7 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
                 if (myPosition[0] != null) {
                     myPosition[0].remove();
                 }
+                localizacion = latLng;
                 myPosition[0] = markerManager.addMarkerGeneric(latLng);
             }
         });
@@ -118,28 +142,21 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
                 }
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
                 myPosition[0] = markerManager.addMarkerGeneric(loc);
+                localizacion = loc;
 
                 return true;
             }
         });
     }
 
-    private void getPositions(MarkerManager markerM, String team, ProgressDialog dialog, LatLng loc){
+    private void getPositions(MarkerManager markerM, String team, ProgressDialog dialog, LatLng loc) {
         PokeSecurity pokeSecurity = PokeSecurity.getInstance(getActivity());
         PokeCredential pokeCredential = pokeSecurity.getCredential();
-//        IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
-//
-//        HashMap<String, Object> params = new HashMap<>();
-////        params.put("token", "1/tonF2rg3bavTh84gxnN9OC3_xLVr5YK5ZO1xWwNeGmE");
-//        params.put("token", pokeCredential.getToken());
-//        params.put("width", 9);
-//        params.put("position", new Position(6.2538345, -75.57843804));
-//        Call<List<PokeStopPosition>> caller = endPoints.getPokeStopPositions(params);
 
         IApiContract endPoints = ApiFactoryClient.getClient(IApiContract.class);
 
         HashMap<String, Object> params = ApiEndPointsBodyGenerator.builder()
-                .getService(pokeCredential.getToken(),4,new Position(loc.latitude, loc.longitude))
+                .getService(pokeCredential.getToken(), 4, new Position(loc.latitude, loc.longitude))
                 .build();
 
         Call<List<PokeStopPosition>> caller = endPoints.getPokeStopPositions(params);
@@ -149,19 +166,24 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
             public void onResponse(Call<List<PokeStopPosition>> call, Response<List<PokeStopPosition>> response) {
                 List<PokeStopPosition> pos = response.body();
 
-                dialog.dismiss();
+                //dialog.dismiss();
 
-                for (PokeStopPosition pokeStopPosition: pos){
-                        markerM.addMarkerStop(pokeStopPosition);
+                pulsator.setVisibility(View.INVISIBLE);
+                search.setVisibility(View.VISIBLE);
+
+                for (PokeStopPosition pokeStopPosition : pos) {
+                    markerM.addMarkerStop(pokeStopPosition);
                 }
             }
 
             @Override
             public void onFailure(Call<List<PokeStopPosition>> call, Throwable t) {
                 Log.e("PKMERROR", "Error llamando servicio", t);
-                dialog.dismiss();
+                //dialog.dismiss();
+                pulsator.setVisibility(View.INVISIBLE);
+                search.setVisibility(View.VISIBLE);
                 Toast toast = Toast.makeText(getContext(), "Error llamando servicio", Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.CENTER,0,0);
+                toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.show();
             }
         });
@@ -174,7 +196,7 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
         ProgressDialog progressDialog;
         LatLng latLng;
 
-        public  TaskAnimation(MarkerManager marker, LatLng loc){
+        public TaskAnimation(MarkerManager marker, LatLng loc) {
             this.markerManager = marker;
             this.latLng = loc;
         }
@@ -182,7 +204,7 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                getPositions(markerManager,color, progressDialog, latLng);
+                getPositions(markerManager, color, progressDialog, latLng);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -198,14 +220,22 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
 
         @Override
         protected void onPreExecute() {
-            progressDialog = new ProgressDialog(getContext());
+            /*progressDialog = new ProgressDialog(getContext());
             progressDialog.show();
-            progressDialog.setContentView(R.layout.custom_progressdialog);
+            progressDialog.setContentView(R.layout.custom_progressdialog);*/
         }
 
 
         @Override
         protected void onProgressUpdate(String... text) {
         }
+    }
+
+
+    private void floatingSearch(View view) {
+        area.remove();
+        area = markerManager.addCircle(localizacion, 400);
+        TaskAnimation taskAnimation = new TaskAnimation(markerManager, localizacion);
+        taskAnimation.execute();
     }
 }

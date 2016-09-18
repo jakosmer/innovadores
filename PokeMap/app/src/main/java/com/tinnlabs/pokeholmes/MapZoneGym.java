@@ -21,6 +21,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
@@ -34,6 +35,8 @@ import com.tinnlabs.pokeholmes.Model.Services.IApiContract;
 import com.tinnlabs.pokeholmes.Security.PokeCredential;
 import com.tinnlabs.pokeholmes.Security.PokeSecurity;
 import com.tinnlabs.pokeholmes.Utils.ApiEndPointsBodyGenerator;
+
+import pl.bclogic.pulsator4droid.library.PulsatorLayout;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,6 +49,9 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private MarkerManager markerManager;
     private LatLng localizacion;
+    private PulsatorLayout pulsator;
+    private FloatingActionButton search;
+    private Circle area;
 
     @Nullable
     @Override
@@ -68,6 +74,17 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
 
         FloatingActionButton actionA = (FloatingActionButton) view.findViewById(R.id.action_a);
         actionA.setOnClickListener(this::floatingClick);
+
+        pulsator = (PulsatorLayout) view.findViewById(R.id.pulsator);
+        pulsator.start();
+
+        search = (FloatingActionButton) view.findViewById(R.id.search_poke);
+        search.setOnClickListener(this::floatingSearch);
+        search.setOnClickListener(v -> {
+            pulsator.setVisibility(View.VISIBLE);
+            search.setVisibility(View.INVISIBLE);
+            floatingClick(v);
+        });
 
         return view;
     }
@@ -97,6 +114,8 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
             final Marker[] myPosition = {markerManager.addMarkerGeneric(localizacion)};
 
             if (gpsLocation.validarGPS()){
+                pulsator.setVisibility(View.VISIBLE);
+                search.setVisibility(View.INVISIBLE);
                 TaskAnimation taskAnimation = new TaskAnimation(markerManager,"",localizacion);
                 taskAnimation.execute();
 
@@ -115,7 +134,7 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
 
                             }
                         });
-                markerManager.addCircle(localizacion,800);
+                area = markerManager.addCircle(localizacion,800);
             }
 
             mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -124,6 +143,7 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
                     if (myPosition[0] != null) {
                         myPosition[0].remove();
                     }
+                    localizacion = latLng;
                     myPosition[0] = markerManager.addMarkerGeneric(latLng);
                 }
             });
@@ -138,6 +158,8 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
                     }
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
                     myPosition[0] = markerManager.addMarkerGeneric(loc);
+
+                    localizacion = loc;
 
                     return true;
                 }
@@ -164,8 +186,9 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
             public void onResponse(Call<List<GymPosition>> call, Response<List<GymPosition>> response) {
                 List<GymPosition> pos = response.body();
 
-
-                dialog.dismiss();
+                pulsator.setVisibility(View.INVISIBLE);
+                search.setVisibility(View.VISIBLE);
+                //dialog.dismiss();
 
                 for (GymPosition gymPosition: pos){
                     if(team.isEmpty())
@@ -226,9 +249,9 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
 
         @Override
         protected void onPreExecute() {
-            progressDialog = new ProgressDialog(getContext());
+            /*progressDialog = new ProgressDialog(getContext());
             progressDialog.show();
-            progressDialog.setContentView(R.layout.custom_progressdialog);
+            progressDialog.setContentView(R.layout.custom_progressdialog);*/
         }
 
 
@@ -259,4 +282,14 @@ public class MapZoneGym extends Fragment implements OnMapReadyCallback {
         TaskAnimation taskAnimation = new TaskAnimation(markerManager,gymName, localizacion);
         taskAnimation.execute();
         }
+
+
+    private void floatingSearch(View view) {
+
+        area.remove();
+        area = markerManager.addCircle(localizacion,400);
+        TaskAnimation taskAnimation = new TaskAnimation(markerManager,"" ,localizacion);
+        taskAnimation.execute();
     }
+
+}
