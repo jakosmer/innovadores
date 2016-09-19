@@ -1,0 +1,23 @@
+<html>
+	<head>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+	</head>
+	<body>
+		<h1>PRUEBA SOCKET.IO -- VER CONSOLA (EN CHROME: F12) </h1>
+
+		<script type="text/javascript">
+			var socket = io();
+
+			$(function(){
+
+				socket.on("serverEvent", function(msg){
+					console.log(msg);
+				});
+
+				socket.emit("connection", "WEB");
+
+			});
+		</script>
+	</body>
+</html>
