@@ -1,0 +1,7 @@
+1- agregar archivo de configuracion en /etc/supervisor/conf.d (ver ejemplo)
+2- crear archivos en /var/log/ para guardar la auditoria de supervisor sobre el proceso
+ * para errores: [nombre].err.log
+ * para info: [nombre].out.log
+3- detener supervisor: service supervisor stop
+4- iniciar supervisor: service supervisor start
+5- validar que el servicio ha iniciado: cat /var/log/supervisor/supervisord.log
