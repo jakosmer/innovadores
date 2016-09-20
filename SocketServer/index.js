@@ -16,6 +16,7 @@ app.post('/emitMessage', function(req, res){
 
 
 	io.emit(body.eventName, body.message);
+	console.log('sent data to event: ' + body.eventName);
 
 	res.send('ok');
 });
