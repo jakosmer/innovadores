@@ -1,6 +1,6 @@
 {
-  "name": "Akka HTTP microservice example",
-  "description": "Simple (micro)service which demonstrates how to accomplish tasks typical for REST service using Akka HTTP.",
-  "website": "https://typesafe.com/activator/template/PokeMapBackend",
-  "success_url": "/ip/8.8.8.8"
+  "name": "Get Started: Scala on Heroku",
+  "description": "A barebones Scala app (using the Play framework), which can easily be deployed to Heroku.",
+  "image": "heroku/scala",
+  "addons": [ "heroku-postgresql" ]
 }
