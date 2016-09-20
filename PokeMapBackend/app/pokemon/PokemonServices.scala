@@ -76,24 +76,20 @@ class PokemonServices extends App{
     var refreshToken: String = "";
     val saveCode = UserSession.findSession(auth_code)
 
-    println("saveCode: " + saveCode)
 
     if(saveCode.isDefined){
-      System.out.println("refresh token encontrado: " + saveCode)
       refreshToken = saveCode.get
     }else{
       val clientSecrets: GoogleClientSecrets = GoogleClientSecrets.load(JacksonFactory.getDefaultInstance, new BufferedReader(new InputStreamReader(getUrl)))
-      println("paso1: " +clientSecrets.getDetails.getClientSecret )
-      println("autcode: " +auth_code )
       val tokenResponse: GoogleTokenResponse = new GoogleAuthorizationCodeTokenRequest(new NetHttpTransport,
                                                                                   JacksonFactory.getDefaultInstance,
                                                                                   "https://www.googleapis.com/oauth2/v4/token",
                                                                                     clientSecrets.getDetails.getClientId,
                                                                                     clientSecrets.getDetails.getClientSecret, auth_code, "").execute
-      println("paso2: " + tokenResponse )
+
       val accessToken: String = tokenResponse.getAccessToken
       refreshToken= tokenResponse.getRefreshToken
-      System.out.println("New refresh token: " + refreshToken)
+
       if(refreshToken != null && !"".equals(refreshToken) )
         UserSession.saveSession(auth_code, refreshToken)
     }
