@@ -158,14 +158,17 @@ class PokemonServices extends App{
       val boxes = getBoundingBox(findPokemon.position.get.latitud, findPokemon.position.get.longitud, 300)
       listPokemons = getCacheable(findPokemon.position.get, findPokemon)
 
+      println("lista boxes: " + boxes.length)
       Future {
         boxes.foreach( position => {
           Thread.sleep(6000)
+          println("########buscando nuevos pokemon: " )
           val otros = getCacheable(position, findPokemon)
-
+          println("########encontrados: " + otros.size)
           val mensaje = Message("57", otros)
 
           CallRestService.sendMessage(urToEmit ,  Json.toJson(mensaje).toString())
+          println("########mensaje enviado: " + mensaje)
         })
       }
 
