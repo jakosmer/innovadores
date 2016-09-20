@@ -68,4 +68,6 @@ assemblyMergeStrategy in assembly := {
 
 assemblyOutputPath in assembly := file("../DSCatcherApp.jar")
 
-mainClass in assembly := Option("controllers.Application")
+//mainClass in (Compile, run) := Some("pokemon.PokemonServices")
+
+//mainClass in assembly := Option("controllers.Application")

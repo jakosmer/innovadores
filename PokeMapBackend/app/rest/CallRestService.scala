@@ -24,10 +24,11 @@ object CallRestService {
 
   val timeout: Duration = Duration.create(DEFAULT_DURATION, TimeUnit.SECONDS)
 
-  def sendMessage(serviceUrl: String, params: String): Future[String] =
+  def sendMessage(serviceUrl: String, params: String): Future[String] = {
+    println("Send message to " + serviceUrl)
+    println("params: " + params)
     try {
-      println("Send message to " + serviceUrl)
-      println("params: " + params)
+
       val request =
         url(serviceUrl)
           .POST
@@ -46,11 +47,12 @@ object CallRestService {
       }))
     } catch {
       case e: Throwable =>
-        println( s"Error buscando menu: ${e.getMessage}", e)
+        println(s"Error buscando menu: ${e.getMessage}", e)
         //Todo que se iba a hacer con eso?
-        throw new SecurityException("Error processing lastAccess. " + e.getCause)
+        println("Error processing lastAccess. " + e.getCause)
+        Future {""}
     }
-
+  }
 
 
   //constant manager //http://lnfdllo.suranet.com/constantmanager/rest/constantes/r2d3/CREDENTIAL_SERVICE_PASSWORD/valor

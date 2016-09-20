@@ -152,10 +152,10 @@ class PokemonServices extends App{
     try {
 
       val boxes = getBoundingBox(findPokemon.position.get.latitud, findPokemon.position.get.longitud, 300)
-      listPokemons = getCacheable(findPokemon.position.get, findPokemon)
+      //listPokemons = getCacheable(findPokemon.position.get, findPokemon)
 
       println("lista boxes: " + boxes.length)
-      Future {
+      //Future {
         boxes.foreach( position => {
           Thread.sleep(6000)
           println("########buscando nuevos pokemon: " )
@@ -166,9 +166,9 @@ class PokemonServices extends App{
           CallRestService.sendMessage(urToEmit ,  Json.toJson(mensaje).toString())
           println("########mensaje enviado: " + mensaje)
         })
-      }
+     // }
 
-      println("Pokemons iniciales: " + listPokemons)
+      //println("Pokemons iniciales: " + listPokemons)
 
       /*
       val wildPokemons: List[WildPokemon] = spawnPoints.getWildPokemons.toList
@@ -333,7 +333,7 @@ class PokemonServices extends App{
 
     val initial = Position(pLatitude, pLongitude)
 
-    val listaPosicionesList = List(
+    val listaPosicionesList = List(initial,
        Position(minLat, minLong),
       Position(minLat, maxLong),
       Position(maxLat, maxLong),
@@ -342,6 +342,12 @@ class PokemonServices extends App{
 
     listaPosicionesList
   }
+
+   override def main(args: Array[String]): Unit = {
+    println("Hello, world!")
+    CallRestService.sendMessage(urToEmit ,  "Mensaje a enviar")
+  }
+
 
 
 
