@@ -4,35 +4,40 @@ import java.util.concurrent.TimeUnit
 
 import dispatch.Defaults._
 import dispatch._
-import dto.{Stop, _}
+import dto._
 import org.json4s.DefaultFormats
 import play.api.libs.json.Json
+import pokemon.Message
 import spray.json._
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Try}
 
-
 /**
- * CallRestService.
- * Created by arcearta on 02/12/2014.
- */
+  * CallRestService.
+  * Created by arcearta on 02/12/2014.
+  */
 object CallRestService {
 
   private val DEFAULT_DURATION = 4
 
   val timeout: Duration = Duration.create(DEFAULT_DURATION, TimeUnit.SECONDS)
+  implicit val pokemonPositionFormat = Json.writes[Position]
+  implicit val pokemonInfoFormat = Json.writes[PokemonPosition]
+  implicit val messageFormat = Json.writes[Message]
 
-  def sendMessage(serviceUrl: String, params: String): Future[String] = {
+  def sendMessage(serviceUrl: String, params: Message): Future[String] = {
     println("Send message to " + serviceUrl)
     println("params: " + params)
-    try {
 
+    val messagetoemit = Json.toJson(params).toString()
+
+    try {
       val request =
         url(serviceUrl)
           .POST
-          .setBody(params)
+          .setBody(messagetoemit)
           .addHeader("Content-Type", "application/json")
 
       Http(request.>(f => {
@@ -50,7 +55,9 @@ object CallRestService {
         println(s"Error buscando menu: ${e.getMessage}", e)
         //Todo que se iba a hacer con eso?
         println("Error processing lastAccess. " + e.getCause)
-        Future {""}
+        Future {
+          ""
+        }
     }
   }
 
@@ -65,10 +72,9 @@ object CallRestService {
       Await.result(response, timeout)
     } catch {
       case e: Throwable =>
-        println( s"Error buscando menu: ${e.getMessage}", e)
+        println(s"Error buscando menu: ${e.getMessage}", e)
         throw e
     }
-
 
 
   def credential(urlCall: String, user: String, password: String) = {
@@ -77,17 +83,17 @@ object CallRestService {
       val request = url(urlCall).GET.as_!(user, password)
         .addHeader("Content-Type", "application/json")
 
-     // val response: Future[org.json4s.JValue] = Http(request OK as.json4s.Json)
+      // val response: Future[org.json4s.JValue] = Http(request OK as.json4s.Json)
       //val json = Await.result(response, timeout)
 
-     // Some(json.extract[SimpleCredential])
+      // Some(json.extract[SimpleCredential])
       ""
 
     } catch {
       case e: Throwable =>
-        println( s"Error buscando menu: ${e.getMessage}", e)
-       // Option.empty[SimpleCredential]
-       ""
+        println(s"Error buscando menu: ${e.getMessage}", e)
+        // Option.empty[SimpleCredential]
+        ""
     }
   }
 
@@ -112,7 +118,7 @@ object CallRestService {
       )
     }.recoverWith {
       case e =>
-        println( s"Error buscando menu: ${e.getMessage}", e)
+        println(s"Error buscando menu: ${e.getMessage}", e)
         Failure(e)
     }.get
   }

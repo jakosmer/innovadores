@@ -24,41 +24,28 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 
-case class Message(eventName : String, message : List[PokemonPosition] )
+case class Message(eventName: String, message: List[PokemonPosition])
+
 /**
   * Created by arcearta on 2016/07/26.
   */
-class PokemonServices extends App{
-
-  implicit val tokenFormat = Json.writes[Token]
-  implicit val tokenReadFormat = Json.reads[Token]
-  implicit val pokemonPositionFormat = Json.writes[Position]
-  implicit val pokemonPositionReadFormat = Json.reads[Position]
-
-  implicit val pokemonInfoFormat = Json.writes[PokemonPosition]
-  implicit val messageFormat = Json.writes[Message]
-
-  implicit val findPokemonFormat = Json.writes[FindPokemon]
-  implicit val findPokemonReadFormat = Json.reads[FindPokemon]
-
-  implicit val findGymFormat = Json.writes[Gym]
-  implicit val findStopFormat = Json.writes[Stop]
+class PokemonServices extends App {
 
   val urToEmit = "http://50.116.54.176:3000/emitMessage";
 
-  def convertStreamToString(is : InputStream) : String = {
-    def inner(reader : BufferedReader, sb : StringBuilder) : String = {
+  def convertStreamToString(is: InputStream): String = {
+    def inner(reader: BufferedReader, sb: StringBuilder): String = {
       val line = reader.readLine()
-      if(line != null) {
+      if (line != null) {
         try {
           inner(reader, sb.append(line + "\n"))
         } catch {
-          case e : IOException => e.printStackTrace()
+          case e: IOException => e.printStackTrace()
         } finally {
           try {
             is.close()
           } catch {
-            case e : IOException => e.printStackTrace()
+            case e: IOException => e.printStackTrace()
           }
         }
 
@@ -76,21 +63,20 @@ class PokemonServices extends App{
     var refreshToken: String = "";
     val saveCode = UserSession.findSession(auth_code)
 
-
-    if(saveCode.isDefined){
+    if (saveCode.isDefined) {
       refreshToken = saveCode.get
-    }else{
+    } else {
       val clientSecrets: GoogleClientSecrets = GoogleClientSecrets.load(JacksonFactory.getDefaultInstance, new BufferedReader(new InputStreamReader(getUrl)))
       val tokenResponse: GoogleTokenResponse = new GoogleAuthorizationCodeTokenRequest(new NetHttpTransport,
-                                                                                  JacksonFactory.getDefaultInstance,
-                                                                                  "https://www.googleapis.com/oauth2/v4/token",
-                                                                                    clientSecrets.getDetails.getClientId,
-                                                                                    clientSecrets.getDetails.getClientSecret, auth_code, "").execute
+        JacksonFactory.getDefaultInstance,
+        "https://www.googleapis.com/oauth2/v4/token",
+        clientSecrets.getDetails.getClientId,
+        clientSecrets.getDetails.getClientSecret, auth_code, "").execute
 
       val accessToken: String = tokenResponse.getAccessToken
-      refreshToken= tokenResponse.getRefreshToken
+      refreshToken = tokenResponse.getRefreshToken
 
-      if(refreshToken != null && !"".equals(refreshToken) )
+      if (refreshToken != null && !"".equals(refreshToken))
         UserSession.saveSession(auth_code, refreshToken)
     }
     refreshToken
@@ -98,14 +84,12 @@ class PokemonServices extends App{
 
   def getUrl: InputStream = {
     val dato = this.getClass.getResourceAsStream("/" + "client_secret.json")
-    println("--------------------")
     //println(convertStreamToString(dato))
-    println("--------------------")
     dato
   }
 
-  def authenticate(token : Option[String], http : OkHttpClient): (CredentialProvider, OkHttpClient) = {
-    var auth:GoogleCredentialProvider = null
+  def authenticate(token: Option[String], http: OkHttpClient): (CredentialProvider, OkHttpClient) = {
+    var auth: GoogleCredentialProvider = null
     val decryptedValue: String = Crypter.decryptAES(token.get)
 
     val provider: GoogleUserCredentialProvider = new GoogleUserCredentialProvider(http)
@@ -114,7 +98,7 @@ class PokemonServices extends App{
     (auth, http)
   }
 
-  def getRefresh(auth_code: String):String = {
+  def getRefresh(auth_code: String): String = {
     val http: OkHttpClient = new OkHttpClient
     val provider: GoogleUserCredentialProvider = new GoogleUserCredentialProvider(http)
     provider.login(auth_code)
@@ -139,10 +123,20 @@ class PokemonServices extends App{
     println(catchablePokemon)
 
     catchablePokemon.foreach(cp => {
-      val timeTohide = if(cp.getExpirationTimestampMs > 0) cp.getExpirationTimestampMs else Calendar.getInstance().getTime().getTime + 120000
+      val timeTohide = if (cp.getExpirationTimestampMs > 0) cp.getExpirationTimestampMs else Calendar.getInstance().getTime().getTime + 120000
       listPokemons = listPokemons ++ List(PokemonPosition(cp.getPokemonId.getNumber, cp.getPokemonId.name, timeTohide, Some(Position(cp.getLatitude, cp.getLongitude))))
     })
     listPokemons
+  }
+
+  def sendMessage(): Unit = {
+    println("--ingreso a sendmessage")
+    val listPokemons = List[PokemonPosition](PokemonPosition(20, "ratata", 123456755, Some(Position(12355, 12455))),
+      PokemonPosition(26, "ratata", 123456755, Some(Position(12355, 12455))),
+      PokemonPosition(40, "dinora", 123445755, Some(Position(12355, 1275))))
+    val mensaje = Message("57", listPokemons)
+    val urToEmt = "http://50.116.54.176:3000/emitMessage";
+    CallRestService.sendMessage(urToEmt, mensaje)
   }
 
   def getAllNearPokemons(findPokemon: FindPokemon): List[PokemonPosition] = {
@@ -155,18 +149,18 @@ class PokemonServices extends App{
       //listPokemons = getCacheable(findPokemon.position.get, findPokemon)
 
       println("lista boxes: " + boxes.length)
-      //Future {
-        boxes.foreach( position => {
+      Future {
+        boxes.foreach(position => {
           Thread.sleep(6000)
-          println("########buscando nuevos pokemon: " )
+          println("########buscando nuevos pokemon: ")
           val otros = getCacheable(position, findPokemon)
           println("########encontrados: " + otros.size)
           val mensaje = Message("57", otros)
-
-          CallRestService.sendMessage(urToEmit ,  Json.toJson(mensaje).toString())
+          val urToEmt = "http://50.116.54.176:3000/emitMessage";
+          CallRestService.sendMessage(urToEmt, mensaje)
           println("########mensaje enviado: " + mensaje)
         })
-     // }
+      }
 
       //println("Pokemons iniciales: " + listPokemons)
 
@@ -216,7 +210,7 @@ class PokemonServices extends App{
       println("Pokemon in area:" + catchablePokemon.size)
 
       catchablePokemon.foreach(cp => {
-        val timeTohide = if(cp.getExpirationTimestampMs > 0) cp.getExpirationTimestampMs else Calendar.getInstance().getTime().getTime + 120000
+        val timeTohide = if (cp.getExpirationTimestampMs > 0) cp.getExpirationTimestampMs else Calendar.getInstance().getTime().getTime + 120000
         listPokemons = listPokemons ++ List(PokemonPosition(cp.getPokemonId.getNumber, cp.getPokemonId.name, timeTohide, Some(Position(cp.getLatitude, cp.getLongitude))))
       })
       listPokemons
@@ -317,7 +311,7 @@ class PokemonServices extends App{
     }
   }
 
-  def getBoundingBox(pLatitude : Double, pLongitude: Double, pDistanceInMeters : Int) = {
+  def getBoundingBox(pLatitude: Double, pLongitude: Double, pDistanceInMeters: Int) = {
 
     val latRadian = Math.toRadians(pLatitude);
 
@@ -334,21 +328,14 @@ class PokemonServices extends App{
     val initial = Position(pLatitude, pLongitude)
 
     val listaPosicionesList = List(initial,
-       Position(minLat, minLong),
+      Position(minLat, minLong),
       Position(minLat, maxLong),
       Position(maxLat, maxLong),
-       Position(maxLat, minLong)
-                                   )
+      Position(maxLat, minLong)
+    )
 
     listaPosicionesList
   }
-
-   override def main(args: Array[String]): Unit = {
-    println("Hello, world!")
-    CallRestService.sendMessage(urToEmit ,  "Mensaje a enviar")
-  }
-
-
 
 
 }

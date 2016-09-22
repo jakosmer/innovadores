@@ -10,6 +10,7 @@ POST    /findPokeStop               controllers.Application.findPokeStop
 POST    /findPokeGym                controllers.Application.findPokeGym
 POST    /getRefresh                 controllers.Application.getRefresh
 POST    /getHeaders                 controllers.Application.getHeaders
+POST    /checkBody                  controllers.Application.checkBody
 
 
 # Map static resources from the /public folder to the /assets URL path
