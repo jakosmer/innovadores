@@ -21,6 +21,10 @@ app.post('/emitMessage', function(req, res){
 	res.send('ok');
 });
 
+io.on('connection', function(socket){
+	console.log('Mobile connected!');
+});
+
 http.listen(3000, function(){
   console.log('listening on *:3000');
 });
