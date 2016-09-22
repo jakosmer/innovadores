@@ -146,7 +146,7 @@ class PokemonServices extends App {
     try {
 
       val boxes = getBoundingBox(findPokemon.position.get.latitud, findPokemon.position.get.longitud, 300)
-      //listPokemons = getCacheable(findPokemon.position.get, findPokemon)
+      listPokemons = getCacheable(findPokemon.position.get, findPokemon)
 
       println("lista boxes: " + boxes.length)
       Future {
@@ -327,7 +327,7 @@ class PokemonServices extends App {
 
     val initial = Position(pLatitude, pLongitude)
 
-    val listaPosicionesList = List(initial,
+    val listaPosicionesList = List(
       Position(minLat, minLong),
       Position(minLat, maxLong),
       Position(maxLat, maxLong),
