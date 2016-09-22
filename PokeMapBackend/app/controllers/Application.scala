@@ -5,11 +5,12 @@ import org.joda.time.{DateTime, DateTimeZone}
 import play.api.mvc._
 import play.api.Play.current
 import play.api.db._
-import pokemon.PokemonServices
+import pokemon.{Message, PokemonServices}
 import play.api.libs.json._
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits._
+import rest.CallRestService
 import tools.PokeCipher
 
 import scala.concurrent.ExecutionContext.Implicits.global._
@@ -36,7 +37,7 @@ trait Service extends Protocols {
 
 }
 
-object Application  extends Controller with Service {
+object Application extends Controller with Service {
 
 
   def index = Action {
@@ -51,22 +52,25 @@ object Application  extends Controller with Service {
     //println("body: " + request.body.toString())
     //println("hora: " + DateTime.now(DateTimeZone.UTC).getHourOfDay)
 
-    Future(Ok(Json.toJson( "" )))
+    Future(Ok(Json.toJson("")))
 
   }
 
 
-  def checkBody(body : String, tokenValid : String): Boolean ={
+  def checkBody = Action.async(parse.json) { implicit request =>
 
-    println("----------bodyIncheck: " + body)
-    println("----------tokenValid: " + tokenValid)
-    val encBody = PokeCipher.encrypt(body)
-    println("---------encBody: " + encBody)
+    //println("----------bodyIncheck: " + body)
+    //println("----------tokenValid: " + tokenValid)
+    //val encBody = PokeCipher.encrypt(body)
+    //println("---------encBody: " + encBody)
 
-    val resp = tokenValid.equals(encBody)
-    println("---------resp: " + resp)
-    resp
-    true
+    //val resp = tokenValid.equals(encBody)
+    //println("---------resp: " + resp)
+    //resp
+
+    val pokemonService = new PokemonServices
+    pokemonService.sendMessage()
+    Future(Ok(Json.toJson("ok")))
   }
 
   def getRefresh = Action.async(parse.json) { implicit request =>
@@ -75,18 +79,18 @@ object Application  extends Controller with Service {
     println("body: " + request.body.toString())
     println("hora: " + DateTime.now(DateTimeZone.UTC).getHourOfDay)
 
-    request.body.validate[Token].map{
+    request.body.validate[Token].map {
       case find => {
 
-          val pokemonService = new PokemonServices
-          val ref = pokemonService.getRefresh(find.auth_code)
-          println("refreshgen: " + ref)
-          //Thread.sleep(10000)
-          Future(Ok(Json.toJson(ref)))
+        val pokemonService = new PokemonServices
+        val ref = pokemonService.getRefresh(find.auth_code)
+        println("refreshgen: " + ref)
+        //Thread.sleep(10000)
+        Future(Ok(Json.toJson(ref)))
 
       }
-    }.recoverTotal{
-      e => Future(BadRequest("Detected error:"+ JsError.toFlatJson(e)))
+    }.recoverTotal {
+      e => Future(BadRequest("Detected error:" + JsError.toFlatJson(e)))
     }
   }
 
@@ -98,82 +102,81 @@ object Application  extends Controller with Service {
     //println("hora: " + DateTime.now(DateTimeZone.UTC).getHourOfDay)
     //println("********************************" )
 
-    request.body.validate[FindPokemon].map{
+    request.body.validate[FindPokemon].map {
       case find => {
         val newFind = find.copy(auth_date = DateTime.now(DateTimeZone.UTC).getHourOfDay)
         val strbody = Json.toJson(newFind).toString
-        if(checkBody(strbody, request.headers.get("AUTH-TOKEN").getOrElse(""))) {
-          val pokemonService = new PokemonServices
-          val respuesta = pokemonService.getAllNearPokemons(find)
-          println(respuesta)
-          Future(Ok(Json.toJson(respuesta )))
-        }else{
-          Future(BadRequest("Check your request or your timezone."))
-        }
+        // if(checkBody(strbody, request.headers.get("AUTH-TOKEN").getOrElse(""))) {
+        val pokemonService = new PokemonServices
+        val respuesta = pokemonService.getAllNearPokemons(find)
+        println(respuesta)
+        Future(Ok(Json.toJson(respuesta)))
+        //}else{
+        //  Future(BadRequest("Check your request or your timezone."))
+        // }
       }
-    }.recoverTotal{
-      e => Future(BadRequest("Detected error:"+ JsError.toFlatJson(e)))
+    }.recoverTotal {
+      e => Future(BadRequest("Detected error:" + JsError.toFlatJson(e)))
     }
   }
 
   def socketActivePokemon = Action.async(parse.json) { implicit request =>
 
-    println("********************************" )
+    println("********************************")
     println("headers: " + request.headers)
     println("body: " + request.body.toString())
     println("hora: " + DateTime.now(DateTimeZone.UTC).getHourOfDay)
-    println("********************************" )
+    println("********************************")
 
-    request.body.validate[FindPokemon].map{
+    request.body.validate[FindPokemon].map {
       case find => {
 
 
-
-        Future(Ok(Json.toJson("respuesta" )))
+        Future(Ok(Json.toJson("respuesta")))
 
       }
-    }.recoverTotal{
-      e => Future(BadRequest("Detected error:"+ JsError.toFlatJson(e)))
+    }.recoverTotal {
+      e => Future(BadRequest("Detected error:" + JsError.toFlatJson(e)))
     }
   }
 
   def findPokeStop = Action.async(parse.json) { implicit request =>
 
-    request.body.validate[FindPokemon].map{
+    request.body.validate[FindPokemon].map {
       case find => {
         val newFind = find.copy(auth_date = DateTime.now(DateTimeZone.UTC).getHourOfDay)
         val strbody = Json.toJson(newFind).toString
-        if(checkBody(strbody, request.headers.get("AUTH-TOKEN").getOrElse(""))) {
-          val pokemonService = new PokemonServices
-          val respuesta = pokemonService.getPokeStop(find)
-          Future(Ok(Json.toJson(respuesta )))
-        }else{
-          Future(BadRequest("Check your request or your timezone."))
-        }
+        //if(checkBody(strbody, request.headers.get("AUTH-TOKEN").getOrElse(""))) {
+        val pokemonService = new PokemonServices
+        val respuesta = pokemonService.getPokeStop(find)
+        Future(Ok(Json.toJson(respuesta)))
+        //}else{
+        //  Future(BadRequest("Check your request or your timezone."))
+        //}
       }
-    }.recoverTotal{
-      e => Future(BadRequest("Detected error:"+ JsError.toFlatJson(e)))
+    }.recoverTotal {
+      e => Future(BadRequest("Detected error:" + JsError.toFlatJson(e)))
     }
   }
 
   def findPokeGym = Action.async(parse.json) { implicit request =>
 
-    request.body.validate[FindPokemon].map{
+    request.body.validate[FindPokemon].map {
       case find => {
         val newFind = find.copy(auth_date = DateTime.now(DateTimeZone.UTC).getHourOfDay)
         val strbody = Json.toJson(newFind).toString
-        if(checkBody(strbody, request.headers.get("AUTH-TOKEN").getOrElse(""))) {
-          val pokemonService = new PokemonServices
-          val respuesta = pokemonService.getGyms(find)
-          println("respuesta: " + respuesta)
-          Future(Ok(Json.toJson(respuesta )))
-        }else{
-          println("Check your request or your timezone.")
-          Future(BadRequest("Check your request or your timezone."))
-        }
+        // if(checkBody(strbody, request.headers.get("AUTH-TOKEN").getOrElse(""))) {
+        val pokemonService = new PokemonServices
+        val respuesta = pokemonService.getGyms(find)
+        println("respuesta: " + respuesta)
+        Future(Ok(Json.toJson(respuesta)))
+        // }else{
+        // println("Check your request or your timezone.")
+        // Future(BadRequest("Check your request or your timezone."))
+        // }
       }
-    }.recoverTotal{
-      e => Future(BadRequest("Detected error:"+ JsError.toFlatJson(e)))
+    }.recoverTotal {
+      e => Future(BadRequest("Detected error:" + JsError.toFlatJson(e)))
     }
   }
 
