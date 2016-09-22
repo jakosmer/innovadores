@@ -152,13 +152,12 @@ class PokemonServices extends App {
       Future {
         boxes.foreach(position => {
           Thread.sleep(6000)
-          println("########buscando nuevos pokemon: ")
           val otros = getCacheable(position, findPokemon)
-          println("########encontrados: " + otros.size)
-          val mensaje = Message("57", otros)
-          val urToEmt = "http://50.116.54.176:3000/emitMessage";
-          CallRestService.sendMessage(urToEmt, mensaje)
-          println("########mensaje enviado: " + mensaje)
+          if(otros.size > 0){
+            val mensaje = Message("57", otros)
+            val urToEmt = "http://50.116.54.176:3000/emitMessage";
+            CallRestService.sendMessage(urToEmt, mensaje)
+          }
         })
       }
 
@@ -327,7 +326,7 @@ class PokemonServices extends App {
 
     val initial = Position(pLatitude, pLongitude)
 
-    val listaPosicionesList = List(
+    val listaPosicionesList = List(initial,
       Position(minLat, minLong),
       Position(minLat, maxLong),
       Position(maxLat, maxLong),
