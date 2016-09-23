@@ -160,12 +160,16 @@ class PokemonServices extends App {
             val df = new DecimalFormat("#.#")
             df.setRoundingMode(RoundingMode.DOWN)
 
-            println("lat: " + df.format(position.latitud))
-            println("lat: " + df.format(position.longitud))
+
             val lat:String = df.format(position.latitud)
             val lon:String = df.format(position.longitud)
 
-            val result:String = lat.replaceAll(".", "").replaceAll(",", "") + lon.replaceAll(".", "").replaceAll(",", "")
+            println("lat: " + lat)
+            println("lon: " + lon)
+
+            var result:String = lat + lon
+            println("result: " + result)
+            result = result.replaceAll(".", "").replaceAll(",", "")
 
             println(result)
 
