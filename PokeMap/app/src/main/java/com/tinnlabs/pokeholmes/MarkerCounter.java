@@ -13,7 +13,10 @@ import android.os.Looper;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.tinnlabs.pokeholmes.Utils.ActivePokemon;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -28,6 +31,7 @@ public class MarkerCounter {
     private Canvas canvas;
     private int idPoke;
 
+    private static ArrayList<ActivePokemon> activeMarkers;
 
     public MarkerCounter(Marker  marker, Resources res, Bitmap bmp, Canvas canvas, int idPoke) {
         this.marker = marker;
@@ -35,6 +39,27 @@ public class MarkerCounter {
         this.res = res;
         this.canvas = canvas;
         this.idPoke = idPoke;
+
+        if(activeMarkers == null){
+            activeMarkers = new ArrayList<>();
+        }
+    }
+
+    public static boolean isActiveMarker(MarkerOptions options){
+
+        if(activeMarkers == null){
+            return false;
+        }
+
+        for(ActivePokemon marker : activeMarkers){
+            if(marker.name.equals(options.getTitle()) &&
+                    marker.latitude == options.getPosition().latitude &&
+                    marker.longitude == options.getPosition().longitude){
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void startCounter(long timeToHide) {
@@ -46,9 +71,24 @@ public class MarkerCounter {
         AsyncAnimator animator = new AsyncAnimator();
         animator.executeOnExecutor(PoolManager.getInstance().getExecutor(), timeToHide);
 
+        ActivePokemon activePokemon = new ActivePokemon(marker.getTitle(), marker.getPosition().latitude, marker.getPosition().longitude);
+
+        activeMarkers.add(activePokemon);
     }
 
     public void destroyMarker(){
+
+        for(ActivePokemon activePokemon : activeMarkers) {
+            if(activePokemon.name.equals(marker.getTitle()) &&
+                    activePokemon.latitude == marker.getPosition().latitude &&
+                    activePokemon.longitude == marker.getPosition().longitude) {
+
+                activeMarkers.remove(activePokemon);
+                break;
+
+            }
+        }
+
         marker.remove();
         marker = null;
     }

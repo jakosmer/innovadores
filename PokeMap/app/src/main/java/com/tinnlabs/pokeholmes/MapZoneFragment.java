@@ -29,10 +29,13 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
+import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.tinnlabs.pokeholmes.Model.Beans.PokemonPosition;
 import com.tinnlabs.pokeholmes.Model.Beans.Position;
 import com.tinnlabs.pokeholmes.Model.Services.ApiFactoryClient;
@@ -78,13 +81,14 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
         try {
 
-            mSocket = IO.socket("http://192.168.42.74:3000");
+            //192.168.42.74
+            mSocket = IO.socket("http://50.116.54.176:3000");
 
         } catch (URISyntaxException e) {
 
         }
 
-        mSocket.on("serverEvent", onMessageFromServerReceived);
+        mSocket.on("57", onMessageFromServerReceived);
         mSocket.connect();
 
         mSocket.emit("connection", "mobile");
@@ -117,7 +121,7 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         if (gpsLocation.validarGPS()){
             search.setVisibility(View.INVISIBLE);
             pulsator.setVisibility(View.VISIBLE);
-            TaskAnimation taskAnimation = new TaskAnimation(markerManager, localizacion);
+            TaskAnimation taskAnimation = new TaskAnimation(localizacion);
             taskAnimation.execute();
 
             area = markerManager.addCircle(localizacion,70);
@@ -177,7 +181,7 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         return new LatLng((y + y0), (x + x0));
     }
 
-    private void getPositions(MarkerManager markerM, ProgressDialog dialog, LatLng loc){
+    private void getPositions(ProgressDialog dialog, LatLng loc){
 
         PokeSecurity pokeSecurity = PokeSecurity.getInstance(getActivity());
         PokeCredential pokeCredential = pokeSecurity.getCredential();
@@ -204,7 +208,7 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
                 }
 
                 for (PokemonPosition pokemonPosition: pos){
-                    markerM.addMarkerPokemon(pokemonPosition);
+                    markerManager.addMarkerPokemon(pokemonPosition);
                 }
             }
 
@@ -227,26 +231,32 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
                 data = args[0];
             }
 
+            Gson gson = new Gson();
+            Type listType = new TypeToken<List<PokemonPosition>>(){}.getType();
+            List<PokemonPosition> pos = gson.fromJson(data.toString(), listType);
+
+            for (PokemonPosition pokemonPosition: pos){
+                    markerManager.addMarkerPokemon(pokemonPosition);
+            }
+
             Log.i("TAG", "llego desde socket: " + data.toString());
         }
     };
 
     class TaskAnimation extends AsyncTask<Void, String, Void> {
 
-        MarkerManager markerManager;
         ProgressDialog progressDialog;
         LatLng latLng;
 
 
-        public  TaskAnimation(MarkerManager marker, LatLng loc){
-            this.markerManager = marker;
+        public  TaskAnimation(LatLng loc){
             this.latLng = loc;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                getPositions(markerManager, progressDialog, latLng);
+                getPositions(progressDialog, latLng);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -276,7 +286,7 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
     public void floatingClick(View view){
         area.remove();
         area = markerManager.addCircle(localizacion,70);
-        TaskAnimation taskAnimation = new TaskAnimation(markerManager, localizacion);
+        TaskAnimation taskAnimation = new TaskAnimation(localizacion);
         taskAnimation.execute();
     }
 }

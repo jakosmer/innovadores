@@ -18,6 +18,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -63,14 +64,16 @@ public class MarkerManager {
 
     public void addMarkerPokemon(PokemonPosition pokemonPosition){
 
+        MarkerOptions options = new MarkerOptions().position(pokemonPosition.getPosition().convertToLatLng()).title(pokemonPosition.getName());
+
+        if(MarkerCounter.isActiveMarker(options)){
+            return;
+        }
 
         String idPoke = "00"+String.valueOf(pokemonPosition.getId());
         idPoke = idPoke.substring(idPoke.length()-3,idPoke.length());
-
         String icoName = "p_"+idPoke;
-
         int id = resources.getIdentifier(icoName, "drawable", this.paquete);
-
         Bitmap.Config conf = Bitmap.Config.ARGB_8888;
         Bitmap bmp = Bitmap.createBitmap(200, 200, conf);
 
@@ -81,7 +84,7 @@ public class MarkerManager {
 
         Canvas canvas = new Canvas(bmp);
 
-        MarkerOptions options = new MarkerOptions().position(pokemonPosition.getPosition().convertToLatLng()).title(pokemonPosition.getName()).icon(BitmapDescriptorFactory.fromResource(id));
+        options.icon(BitmapDescriptorFactory.fromResource(id));
         Marker marker =  mapa.addMarker(options);
 
         MarkerCounter counter = new MarkerCounter(marker, this.resources, bmp, canvas, id);
