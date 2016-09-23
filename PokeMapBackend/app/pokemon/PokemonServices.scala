@@ -1,6 +1,8 @@
 package pokemon
 
 import java.io.{BufferedReader, IOException, InputStream, InputStreamReader}
+import java.math.RoundingMode
+import java.text.DecimalFormat
 import java.util.Calendar
 
 import POGOProtos.Map.Pokemon.MapPokemonOuterClass.MapPokemon
@@ -32,6 +34,9 @@ case class Message(eventName: String, message: List[PokemonPosition])
 class PokemonServices extends App {
 
   val urToEmit = "http://50.116.54.176:3000/emitMessage";
+
+  val df = new DecimalFormat("#.#")
+  df.setRoundingMode(RoundingMode.DOWN)
 
   def convertStreamToString(is: InputStream): String = {
     def inner(reader: BufferedReader, sb: StringBuilder): String = {
@@ -154,7 +159,15 @@ class PokemonServices extends App {
           Thread.sleep(6000)
           val otros = getCacheable(position, findPokemon)
           if(otros.size > 0){
-            val mensaje = Message("57", otros)
+
+            val lat:String = df.format(position.latitud)
+            val lon:String = df.format(position.longitud)
+
+            val result:String = lat.replaceAll(".", "").replaceAll(",", "") + lon.replaceAll(".", "").replaceAll(",", "")
+
+            println(result)
+
+            val mensaje = Message(result, otros)
             val urToEmt = "http://50.116.54.176:3000/emitMessage";
             CallRestService.sendMessage(urToEmt, mensaje)
           }
