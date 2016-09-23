@@ -169,7 +169,7 @@ class PokemonServices extends App {
 
             var result:String = lat + lon
             println("result: " + result)
-            result = result.replaceAll(".", "").replaceAll(",", "")
+            result = result.replace(".", "").replace(",", "")
 
             println(result)
 
