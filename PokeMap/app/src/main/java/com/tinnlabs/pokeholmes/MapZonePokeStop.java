@@ -1,6 +1,5 @@
 package com.tinnlabs.pokeholmes;
 
-import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -149,7 +148,7 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    private void getPositions(MarkerManager markerM, String team, ProgressDialog dialog, LatLng loc) {
+    private void getPositions(MarkerManager markerM, String team, LatLng loc) {
         PokeSecurity pokeSecurity = PokeSecurity.getInstance(getActivity());
         PokeCredential pokeCredential = pokeSecurity.getCredential();
 
@@ -179,7 +178,8 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
             @Override
             public void onFailure(Call<List<PokeStopPosition>> call, Throwable t) {
                 Log.e("PKMERROR", "Error llamando servicio", t);
-                //dialog.dismiss();
+                pulsator.setVisibility(View.INVISIBLE);
+                search.setVisibility(View.VISIBLE);
                 pulsator.setVisibility(View.INVISIBLE);
                 search.setVisibility(View.VISIBLE);
                 Toast toast = Toast.makeText(getContext(), "Error llamando servicio", Toast.LENGTH_LONG);
@@ -193,7 +193,6 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
 
         String color;
         MarkerManager markerManager;
-        ProgressDialog progressDialog;
         LatLng latLng;
 
         public TaskAnimation(MarkerManager marker, LatLng loc) {
@@ -204,7 +203,7 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                getPositions(markerManager, color, progressDialog, latLng);
+                getPositions(markerManager, color, latLng);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -220,9 +219,6 @@ public class MapZonePokeStop extends Fragment implements OnMapReadyCallback {
 
         @Override
         protected void onPreExecute() {
-            /*progressDialog = new ProgressDialog(getContext());
-            progressDialog.show();
-            progressDialog.setContentView(R.layout.custom_progressdialog);*/
         }
 
 

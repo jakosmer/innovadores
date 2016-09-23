@@ -1,28 +1,24 @@
 package com.tinnlabs.pokeholmes;
 
-import android.*;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.ProgressDialog;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
-
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-
-import android.os.Build;
-import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -32,12 +28,8 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -47,18 +39,18 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import com.tinnlabs.pokeholmes.Model.Services.ApiFactoryClient;
 import com.tinnlabs.pokeholmes.Model.Services.IApiContract;
 import com.tinnlabs.pokeholmes.Security.PokeSecurity;
 import com.tinnlabs.pokeholmes.Utils.ApiEndPointsBodyGenerator;
-import retrofit2.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.READ_CONTACTS;
@@ -445,10 +437,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     .addAuthCode(authCode)
                     .build();
 
-            ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.show();
-            progressDialog.setContentView(R.layout.custom_progressdialog);
-
             Call<String> caller = endPoints.getToken(params);
             caller.enqueue(new Callback<String>() {
                 @Override
@@ -462,14 +450,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             security.startEntryPoint();
                         }
                     }
-
-                    progressDialog.dismiss();
                 }
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
                     Log.e(LOGIN_STATE, "Error retreving token from google " + t.getMessage());
-                    progressDialog.dismiss();
 
                     Toast toast = Toast.makeText(LoginActivity.this, R.string.login_failed, Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.CENTER, 0, 0);

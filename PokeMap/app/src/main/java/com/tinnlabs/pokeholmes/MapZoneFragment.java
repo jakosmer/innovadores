@@ -1,7 +1,6 @@
 package com.tinnlabs.pokeholmes;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,7 +29,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.lang.reflect.Type;
+import java.math.RoundingMode;
 import java.net.URISyntaxException;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 
@@ -88,7 +89,10 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
         }
 
-        mSocket.on("57", onMessageFromServerReceived);
+
+
+
+
         mSocket.connect();
 
         mSocket.emit("connection", "mobile");
@@ -115,6 +119,9 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
         GpsLocation gpsLocation = new GpsLocation(getActivity().getApplicationContext());
         localizacion = new LatLng(gpsLocation.getLatitud(), gpsLocation.getLongitud());
+
+        mSocket.on(getSocketName(localizacion), onMessageFromServerReceived);
+
         markerManager = new MarkerManager(mMap, getResources(), this.getActivity().getPackageName());
         final Marker[] myPosition = {markerManager.addMarkerGeneric(localizacion)};
 
@@ -181,7 +188,7 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         return new LatLng((y + y0), (x + x0));
     }
 
-    private void getPositions(ProgressDialog dialog, LatLng loc){
+    private void getPositions(LatLng loc){
 
         PokeSecurity pokeSecurity = PokeSecurity.getInstance(getActivity());
         PokeCredential pokeCredential = pokeSecurity.getCredential();
@@ -214,8 +221,9 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
             @Override
             public void onFailure(Call<List<PokemonPosition>> call, Throwable t) {
+                pulsator.setVisibility(View.INVISIBLE);
+                search.setVisibility(View.VISIBLE);
                 Log.e("PKMERROR", "Error llamando servicio", t);
-                dialog.dismiss();
                 Toast toast = Toast.makeText(getContext(), "Error llamando servicio", Toast.LENGTH_LONG);
                 toast.setGravity(Gravity.CENTER,0,0);
                 toast.show();
@@ -235,9 +243,17 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
             Type listType = new TypeToken<List<PokemonPosition>>(){}.getType();
             List<PokemonPosition> pos = gson.fromJson(data.toString(), listType);
 
-            for (PokemonPosition pokemonPosition: pos){
-                    markerManager.addMarkerPokemon(pokemonPosition);
-            }
+            getActivity().runOnUiThread(() -> {
+
+                try {
+                    for (PokemonPosition pokemonPosition: pos){
+                        markerManager.addMarkerPokemon(pokemonPosition);
+                    }
+                }catch (Exception e){
+                    Log.e("ERROR",e.getMessage(),e);
+                }
+
+            });
 
             Log.i("TAG", "llego desde socket: " + data.toString());
         }
@@ -245,7 +261,6 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
     class TaskAnimation extends AsyncTask<Void, String, Void> {
 
-        ProgressDialog progressDialog;
         LatLng latLng;
 
 
@@ -256,7 +271,7 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                getPositions(progressDialog, latLng);
+                getPositions(latLng);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -272,9 +287,6 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
 
         @Override
         protected void onPreExecute() {
-//            progressDialog = new ProgressDialog(getActivity());
-//            progressDialog.show();
-//            progressDialog.setContentView(R.layout.custom_progressdialog);
         }
 
 
@@ -288,5 +300,19 @@ public class MapZoneFragment extends Fragment implements OnMapReadyCallback {
         area = markerManager.addCircle(localizacion,70);
         TaskAnimation taskAnimation = new TaskAnimation(localizacion);
         taskAnimation.execute();
+        mSocket.off();
+        mSocket.on(getSocketName(localizacion), onMessageFromServerReceived);
+    }
+
+    private String getSocketName(LatLng position){
+        String name="";
+
+        DecimalFormat df = new DecimalFormat("#.#");
+        df.setRoundingMode(RoundingMode.DOWN);
+        String lat = df.format(position.latitude).replace(".","").replace(",","");
+        String lon = df.format(position.longitude).replace(".","").replace(",","");
+        name = lat+lon;
+
+        return name;
     }
 }
