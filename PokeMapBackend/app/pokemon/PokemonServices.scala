@@ -35,9 +35,6 @@ class PokemonServices extends App {
 
   val urToEmit = "http://50.116.54.176:3000/emitMessage";
 
-  val df = new DecimalFormat("#.#")
-  df.setRoundingMode(RoundingMode.DOWN)
-
   def convertStreamToString(is: InputStream): String = {
     def inner(reader: BufferedReader, sb: StringBuilder): String = {
       val line = reader.readLine()
@@ -160,6 +157,11 @@ class PokemonServices extends App {
           val otros = getCacheable(position, findPokemon)
           if(otros.size > 0){
 
+            val df = new DecimalFormat("#.#")
+            df.setRoundingMode(RoundingMode.DOWN)
+
+            println("lat: " + df.format(position.latitud))
+            println("lat: " + df.format(position.longitud))
             val lat:String = df.format(position.latitud)
             val lon:String = df.format(position.longitud)
 
