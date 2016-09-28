@@ -28,21 +28,16 @@ object CallRestService {
   implicit val messageFormat = Json.writes[Message]
 
   def sendMessage(serviceUrl: String, params: Message): Future[String] = {
-    println("Send message to " + serviceUrl)
-    println("params: " + params)
-
     val messagetoemit = Json.toJson(params).toString()
-
+    println("message to emit: " + messagetoemit)
     try {
       val request =
         url(serviceUrl)
           .POST
           .setBody(messagetoemit)
           .addHeader("Content-Type", "application/json")
-
       Http(request.>(f => {
         if (f.getStatusCode == 200) {
-          println("response: " + f.getStatusCode)
           //val entryDate = f.getResponseBody.parseJson.convertTo[LastEntryDate]
           //entryDate.date
           ""

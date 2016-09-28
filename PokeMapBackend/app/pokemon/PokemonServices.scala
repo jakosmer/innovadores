@@ -50,18 +50,14 @@ class PokemonServices extends App {
             case e: IOException => e.printStackTrace()
           }
         }
-
       }
       sb.toString()
     }
-
     inner(new BufferedReader(new InputStreamReader(is)), new StringBuilder())
   }
 
   @throws[IOException]
   private def refreshMyToken(auth_code: String): String = {
-    System.out.println("auth_code on refreshMyToken: " + auth_code)
-
     var refreshToken: String = "";
     val saveCode = UserSession.findSession(auth_code)
 
@@ -122,7 +118,6 @@ class PokemonServices extends App {
 
     val catchablePokemon: List[MapPokemon] = spawnPoints.getCatchablePokemons.toList
     println("catchablePokemon in area:" + catchablePokemon.size)
-    println(catchablePokemon)
 
     catchablePokemon.foreach(cp => {
       val timeTohide = if (cp.getExpirationTimestampMs > 0) cp.getExpirationTimestampMs else Calendar.getInstance().getTime().getTime + 120000
@@ -150,28 +145,20 @@ class PokemonServices extends App {
       val boxes = getBoundingBox(findPokemon.position.get.latitud, findPokemon.position.get.longitud, 300)
       listPokemons = getCacheable(findPokemon.position.get, findPokemon)
 
-      println("lista boxes: " + boxes.length)
       Future {
         boxes.foreach(position => {
           Thread.sleep(6000)
           val otros = getCacheable(position, findPokemon)
-          if(otros.size > 0){
+          if (otros.size > 0) {
 
             val df = new DecimalFormat("#.#")
             df.setRoundingMode(RoundingMode.DOWN)
 
+            val lat: String = df.format(position.latitud)
+            val lon: String = df.format(position.longitud)
 
-            val lat:String = df.format(position.latitud)
-            val lon:String = df.format(position.longitud)
-
-            println("lat: " + lat)
-            println("lon: " + lon)
-
-            var result:String = lat + lon
-            println("result: " + result)
+            var result: String = lat + lon
             result = result.replace(".", "").replace(",", "")
-
-            println(result)
 
             val mensaje = Message(result, otros)
             val urToEmt = "http://50.116.54.176:3000/emitMessage";
@@ -253,7 +240,6 @@ class PokemonServices extends App {
       val go: PokemonGo = new PokemonGo(datos._1, datos._2)
 
       Thread.sleep(4000)
-
 
       //6.254010, -75.578931
       go.setLocation(findPokemon.position.get.latitud, findPokemon.position.get.longitud, 0)
