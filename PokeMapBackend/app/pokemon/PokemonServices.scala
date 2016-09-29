@@ -142,29 +142,30 @@ class PokemonServices extends App {
 
     try {
 
-      val boxes = getBoundingBox(findPokemon.position.get.latitud, findPokemon.position.get.longitud, 300)
+      //val boxes = getBoundingBox(findPokemon.position.get.latitud, findPokemon.position.get.longitud, 300)
       listPokemons = getCacheable(findPokemon.position.get, findPokemon)
 
+      if (listPokemons.size > 0) {
       Future {
-        boxes.foreach(position => {
-          Thread.sleep(6000)
-          val otros = getCacheable(position, findPokemon)
-          if (otros.size > 0) {
+        //boxes.foreach(position => {
+         // Thread.sleep(6000)
+        //val otros = getCacheable(position, findPokemon)
+
 
             val df = new DecimalFormat("#.#")
             df.setRoundingMode(RoundingMode.DOWN)
 
-            val lat: String = df.format(position.latitud)
-            val lon: String = df.format(position.longitud)
+            val lat: String = df.format(findPokemon.position.get.latitud)
+            val lon: String = df.format(findPokemon.position.get.longitud)
 
             var result: String = lat + lon
             result = result.replace(".", "").replace(",", "")
 
-            val mensaje = Message(result, otros)
+            val mensaje = Message(result, listPokemons)
             val urToEmt = "http://50.116.54.176:3000/emitMessage";
             CallRestService.sendMessage(urToEmt, mensaje)
           }
-        })
+        //})
       }
 
       //println("Pokemons iniciales: " + listPokemons)
